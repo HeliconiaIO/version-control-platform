@@ -1,0 +1,197 @@
+<templates id="template" xml:space="preserve">
+
+    <!-- Template for the widget SignatureForm. -->
+    <t t-name="cotributors_github.ContributorsRender">
+        <div class="o_contributors_render">
+            <h4>GitHub Contributors Statistics</h4>
+            <div class="d-flex mb-3 o_contributors_render_filters row">
+                <div class="col">
+                    <input
+                        id="year_input"
+                        class="form-control me-4"
+                        type="number"
+                        t-model="state.year"
+                        t-on-change="fetchData"
+                    />
+                </div>
+                <div class="col">
+                    <select
+                        t-model="state.month"
+                        class="form-select"
+                        t-on-change="fetchData"
+                    >
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <Dropdown>
+                        <button
+                            class="ms-4 px-3 btn btn-link btn-primary py-0 px-1 o-dropdown-caret h-100"
+                        >
+                            <span t-esc="state.period" />
+                        </button>
+                        <t t-set-slot="content">
+                            <DropdownItem
+                                onSelected="() => this.selectPeriod('MTD')"
+                            >MTD</DropdownItem>
+                            <DropdownItem
+                                onSelected="() => this.selectPeriod('YTD')"
+                            >YTD</DropdownItem>
+                            <DropdownItem
+                                onSelected="() => this.selectPeriod('MAT')"
+                            >MAT</DropdownItem>
+                        </t>
+                    </Dropdown>
+                </div>
+                <div class="col">
+                    <button
+                        t-att-class="state.kind === 'contributors' ? 'btn ms-4 btn-primary' : 'btn ms-4'"
+                        t-on-click="(ev) => this.setKind('contributors')"
+                    >Contributors</button>
+                </div>
+                <div class="col">
+                    <button
+                        t-att-class="state.kind === 'organizations' ? 'btn ms-4 btn-primary' : 'btn ms-4'"
+                        t-on-click="(ev) => this.setKind('organizations')"
+                    >Organizations</button>
+                </div>
+                <div class="col">
+                    <button
+                        t-att-class="state.kind === 'repositories' ? 'btn ms-4 btn-primary' : 'btn ms-4'"
+                        t-on-click="(ev) => this.setKind('repositories')"
+                    >Repositories</button>
+                </div>
+            </div>
+            <table class="table table-striped o_contributors_render_table">
+                <thead>
+                    <tr>
+                        <th>
+                            <span t-if="state.kind=== 'contributors'">Contributor</span>
+                            <span
+                                t-if="state.kind=== 'organizations'"
+                            >Organization</span>
+                            <span t-if="state.kind=== 'repositories'">Repository</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'name'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('index')"
+                            class="o_contributors_render_table_header sortable text-end"
+                            t-if="state.kind === 'contributors' or state.kind === 'repositories'"
+                        >
+                            <span>Index</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'index'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('created_pull_requests')"
+                            class="o_contributors_render_table_header sortable text-end"
+                        >
+                            <span>Created PRs</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'created_pull_requests'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('merged_pull_requests')"
+                            class="o_contributors_render_table_header sortable text-end"
+                        >
+                            <span>Merged PRs</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'merged_pull_requests'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('reviews')"
+                            class="o_contributors_render_table_header sortable text-end"
+                            t-if="state.kind !== 'organizations'"
+                        >
+                            <span>Reviewed PRs</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'reviews'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('reviews')"
+                            class="o_contributors_render_table_header sortable text-end"
+                            t-if="state.kind === 'organizations'"
+                        >
+                            <span>Reviews received</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'reviews'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('comments')"
+                            class="o_contributors_render_table_header sortable text-end"
+                            t-if="state.kind !== 'organizations'"
+                        >
+                            <span>Comments</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'comments'"
+                                class="o_contributors_render_table_header sortable fa fa-sort-desc"
+                            />
+                        </th>
+                        <th
+                            t-on-click="() => this.sortBy('comments')"
+                            class="o_contributors_render_table_header sortable text-end"
+                            t-if="state.kind === 'organizations'"
+                        >
+                            <span>Comments received</span>
+                            <i
+                                t-if="state.sort[state.kind] === 'comments'"
+                                class="fa fa-sort-desc"
+                            />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="rowIds" t-as="row_id" t-key="row_id">
+                        <t t-set="row" t-value="getRowData(row_id)" />
+                        <td>
+                            <a
+                                t-att-href="'https://github.com/' + row.github_name"
+                                t-esc="row.name"
+                            />
+                        </td>
+                        <td
+                            class="text-end"
+                            t-if="state.kind === 'contributors' or state.kind === 'repositories'"
+                            t-esc="formatFloat(row.index, 2)"
+                        />
+                        <td
+                            class="text-end"
+                            t-esc="formatFloat(row.created_pull_requests, 0)"
+                        />
+                        <td
+                            class="text-end"
+                            t-esc="formatFloat(row.merged_pull_requests, 0)"
+                        />
+                        <td class="text-end" t-esc="formatFloat(row.reviews, 0)" />
+                        <td class="text-end" t-esc="formatFloat(row.comments, 0)" />
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+</templates>

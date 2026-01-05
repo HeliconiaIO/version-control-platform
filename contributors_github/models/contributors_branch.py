@@ -1,0 +1,33 @@
+# Copyright 2026 Dixmit
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import fields, models
+
+
+class ContributorsBranch(models.Model):
+    _name = "contributors.branch"
+    _description = "Contributors Branch"  # TODO
+
+    name = fields.Char(required=True)
+    organization_id = fields.Many2one(
+        comodel_name="contributors.organization",
+        string="Organization",
+        required=True,
+    )
+    _sql_constraints = [
+        ("name_uniq", "unique(name, organization_id)", "Branch name must be unique.")
+    ]
+
+    def _get_branch(self, organization, name):
+        branch = self.search(
+            [("organization_id", "=", organization.id), ("name", "=", name)],
+            limit=1,
+        )
+        if not branch:
+            branch = self.sudo().create(
+                {
+                    "organization_id": organization.id,
+                    "name": name,
+                }
+            )
+        return branch.id

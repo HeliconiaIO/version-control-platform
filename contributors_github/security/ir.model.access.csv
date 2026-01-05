@@ -1,0 +1,11 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_organization,Access Organization,model_contributors_organization,base.group_user,1,0,0,0
+access_organization_portal,Access Organization,model_contributors_organization,base.group_portal,1,0,0,0
+manage_organization,Manage Organization,model_contributors_organization,base.group_system,1,1,1,0
+manage_organization_key,Manage Organization Keys,model_contributors_organization_key,base.group_system,1,1,1,1
+access_branch,Access Branch,model_contributors_branch,base.group_user,1,0,0,0
+access_repository,Access Repository,model_contributors_repository,base.group_user,1,0,0,0
+access_pull_request,Access Pull Requests,model_contributors_pull_request,base.group_user,1,0,0,0
+access_pull_request_label,Access Pull Requests Labels,model_contributors_pull_request_label,base.group_user,1,0,0,0
+access_review,Access Reviews,model_contributors_review,base.group_user,1,0,0,0
+access_comment,Access Comments,model_contributors_comment,base.group_user,1,0,0,0
