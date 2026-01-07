@@ -1,0 +1,19 @@
+<templates id="template" xml:space="preserve">
+
+    <!-- Template for the widget SignatureForm. -->
+    <t t-inherit="cotributors_github.ContributorsRender" t-inherit-mode="extension">
+        <xpath expr="//Dropdown/.." position="before">
+            <div class="o_input col">
+                <AutoComplete
+                    value="state.psc"
+                    sources="pscSources"
+                    onSelect.bind="onSelectPsc"
+                    class=""
+                    resetOnSelect="true"
+                    autoSelect="true"
+                />
+            </div>
+        </xpath>
+    </t>
+
+</templates>
