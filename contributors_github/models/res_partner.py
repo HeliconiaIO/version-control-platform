@@ -36,16 +36,17 @@ class ResPartner(models.Model):
     def _get_github_user(self, gh, client):
         if not gh:
             return False
+        github_login = str(gh)
         partner = self.with_context(active_test=False).search(
-            [("github_name", "=ilike", str(gh))], limit=1
+            [("github_name", "=ilike", github_login)], limit=1
         )
         if not partner:
             if isinstance(gh, str):
-                gh = client.user(str(gh))
+                gh = client.user(github_login)
             return self.create(
                 {
                     "name": getattr(gh, "name", None) or str(gh),
-                    "github_name": str(gh),
+                    "github_name": github_login,
                     "github_user": True,
                 }
             ).id
