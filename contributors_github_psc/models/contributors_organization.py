@@ -65,7 +65,9 @@ class ContributorsOrganization(models.Model):
                         members.append(
                             self.env["res.partner"]._get_github_user(member, client)
                         )
-                    psc_record.member_ids = self.env["res.partner"].browse(members)
+                    psc_record.sudo().member_ids = self.env["res.partner"].browse(
+                        members
+                    )
             for _repo_filename, repo_file in repository_files:
                 req = requests.get(repo_file.download_url, timeout=10)
                 req.raise_for_status()
