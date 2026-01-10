@@ -87,7 +87,7 @@ class ContributorsOrganization(models.Model):
                     translation.sudo().write(vals)
                 total += 1
                 if total % 100 == 0:
-                    _logger.info(
+                    _logger.debug(
                         f"Processed {total} of {max_total} Weblate translation changes"
                     )
             if req.json().get("next"):
