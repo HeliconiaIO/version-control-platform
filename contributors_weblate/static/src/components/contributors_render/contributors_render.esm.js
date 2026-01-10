@@ -73,6 +73,13 @@ patch(ContributorsRender.prototype, {
             },
         ];
     },
+    onChangeLang(event) {
+        if (event.inputValue === "") {
+            this.state.langId = null;
+            this.state.lang = "";
+            this.fetchData();
+        }
+    },
     onSelectLang(option) {
         this.state.langId = option.value;
         this.state.lang = this.state.rawLangs[option.value].name;

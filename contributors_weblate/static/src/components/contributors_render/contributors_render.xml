@@ -8,6 +8,7 @@
                     value="state.lang"
                     sources="langSources"
                     onSelect.bind="onSelectLang"
+                    onChange.bind="onChangeLang"
                     class=""
                     resetOnSelect="true"
                     autoSelect="true"
