@@ -1,0 +1,28 @@
+<templates id="template" xml:space="preserve">
+
+    <!-- Template for the widget SignatureForm. -->
+    <t t-inherit="cotributors_github.ContributorsRender" t-inherit-mode="extension">
+        <xpath expr="//Dropdown/.." position="before">
+            <div class="o_input col" t-if="state.kind === 'translations'">
+                <AutoComplete
+                    value="state.lang"
+                    sources="langSources"
+                    onSelect.bind="onSelectLang"
+                    class=""
+                    resetOnSelect="true"
+                    autoSelect="true"
+                    placeholder="selectLanguage"
+                />
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('o_contributors_repositories')]" position="after">
+            <div class="col o_contributors_translations">
+                <button
+                    t-att-class="state.kind === 'translations' ? 'btn ms-4 btn-primary' : 'btn ms-4'"
+                    t-on-click="(ev) => this.setKind('translations')"
+                >Translations</button>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

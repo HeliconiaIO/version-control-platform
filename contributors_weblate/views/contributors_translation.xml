@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Dixmit
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record model="ir.ui.view" id="contributors_translation_form_view">
+        <field name="model">contributors.translation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header />
+                <sheet>
+                    <group>
+                        <field name="integration_id" />
+                        <field name="partner_id" />
+                        <field name="repository_id" />
+                        <field name="branch_id" />
+                        <field name="component" />
+                        <field name="translation" />
+                        <field name="action" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="contributors_translation_search_view">
+        <field name="model">contributors.translation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="integration_id" />
+                <field name="partner_id" />
+                <field name="lang_id" />
+                <filter
+                    name="With Partner"
+                    domain="[('partner_id', '!=', False)]"
+                    string="With Partner"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="groupby_lang"
+                        context="{'group_by': 'lang_id'}"
+                        string="Language"
+                    />
+                    <filter
+                        name="groupby_partner"
+                        context="{'group_by': 'partner_id'}"
+                        string="Partner"
+                    />
+                    <filter
+                        name="groupby_repository"
+                        context="{'group_by': 'repository_id'}"
+                        string="Repository"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="contributors_translation_tree_view">
+        <field name="model">contributors.translation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="integration_id" />
+                <field name="repository_id" />
+                <field name="branch_id" />
+                <field name="partner_id" />
+                <field name="action" />
+                <field name="component" />
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="contributors_translation_act_window">
+        <field name="name">Translations</field>
+        <field name="res_model">contributors.translation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('organization_id', '=', active_id)]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record
+        model="ir.actions.act_window"
+        id="contributors_translation_repository_act_window"
+    >
+        <field name="name">Translations</field>
+        <field name="res_model">contributors.translation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('repository_id', '=', active_id)]</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>

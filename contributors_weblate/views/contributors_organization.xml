@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Dixmit
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record model="ir.ui.view" id="contributors_organization_form_view">
+        <field name="model">contributors.organization</field>
+        <field
+            name="inherit_id"
+            ref="contributors_github.contributors_organization_form_view"
+        />
+        <field name="arch" type="xml">
+            <button name="update_information" position="after">
+                <button
+                    name="get_weblate_data"
+                    type="object"
+                    string="Update Weblate Data"
+                    class="oe_highlight"
+                    invisible="not weblate_url"
+                />
+            </button>
+            <div name="button_box" position="inside">
+                <button
+                    name="%(contributors_translation_act_window)d"
+                    type="action"
+                    string="Translations"
+                    class="oe_stat_button"
+                    icon="fa-language"
+                    invisible="not weblate_url"
+                />
+            </div>
+            <notebook position="inside">
+                <page string="Weblate">
+                    <group>
+                        <field name="weblate_url" />
+                        <field name="weblate_last_update" />
+                        <field name="weblate_auth_token" />
+                        <field name="weblate_load_delay" />
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
