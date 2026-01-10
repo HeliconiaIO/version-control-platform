@@ -32,7 +32,7 @@ class ContributorsPSCController(ContributorsController):
         return data
 
     def _translation_actions(self):
-        return ["5", "8", "25", "27"]
+        return ["2", "5", "8", "25", "27"]
 
     def _get_translation_domain(
         self,
