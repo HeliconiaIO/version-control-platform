@@ -8,6 +8,7 @@
                     value="state.psc"
                     sources="pscSources"
                     onSelect.bind="onSelectPsc"
+                    onChange.bind="onChangePsc"
                     class=""
                     resetOnSelect="true"
                     autoSelect="true"

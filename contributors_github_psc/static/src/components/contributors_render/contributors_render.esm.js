@@ -47,6 +47,13 @@ patch(ContributorsRender.prototype, {
             },
         ];
     },
+    onChangePsc(event) {
+        if (event.inputValue === "") {
+            this.state.pscId = null;
+            this.state.psc = "";
+            this.fetchData();
+        }
+    },
     onSelectPsc(option) {
         this.state.pscId = option.value;
         this.state.psc = this.state.rawPscs[option.value].name;
