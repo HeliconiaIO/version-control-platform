@@ -22,6 +22,7 @@ export class ContributorsRender extends Component {
                 organizations: "merged_pull_requests",
                 repositories: "merged_pull_requests",
             },
+            columns: {},
             period: "YTD",
             contributors: [],
             organizations: [],
@@ -37,22 +38,16 @@ export class ContributorsRender extends Component {
         this.fetchData();
     }
     async fetchData() {
+        const data = await rpc("/contributors/fetch", this.getParameters());
         if (this.state.kind === "contributors") {
-            this.state.contributors = await rpc(
-                "/contributors/fetch",
-                this.getParameters()
-            );
+            this.state.contributors = data.data;
         } else if (this.state.kind === "organizations") {
-            this.state.organizations = await rpc(
-                "/contributors/fetch",
-                this.getParameters()
-            );
+            this.state.organizations = data.data;
         } else if (this.state.kind === "repositories") {
-            this.state.repositories = await rpc(
-                "/contributors/fetch",
-                this.getParameters()
-            );
+            this.state.repositories = data.data;
         }
+        this.state.columns = data.columns;
+        return data;
     }
     getParameters() {
         return {

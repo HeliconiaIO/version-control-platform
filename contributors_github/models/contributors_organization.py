@@ -1,11 +1,14 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
+import logging
 
 import github3
 import requests
 
 from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class ContributorsOrganization(models.Model):
@@ -67,6 +70,15 @@ class ContributorsOrganization(models.Model):
         for repo in repos:
             self.env["contributors.repository"]._update_repository(repo, self)
         self.last_update = fields.Datetime.now()
+
+    def _cron_update_organizations(self):
+        for organization in self.search([("key_ids", "!=", False)]):
+            try:
+                organization.update_information()
+            except Exception as e:
+                _logger.error(
+                    "Error updating organization %s: %s", organization.name, str(e)
+                )
 
 
 class ContributorsOrganizationKey(models.Model):

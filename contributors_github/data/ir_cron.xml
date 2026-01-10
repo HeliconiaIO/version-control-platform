@@ -11,4 +11,13 @@
         <field name="interval_type">minutes</field>
         <field name="active">False</field>
     </record>
+    <record model="ir.cron" id="cron_organization_update">
+        <field name="name">GitHub Organization Update</field>
+        <field name="model_id" ref="model_contributors_organization" />
+        <field name="state">code</field>
+        <field name="code">model._cron_update_organizations()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">False</field>
+    </record>
 </odoo>

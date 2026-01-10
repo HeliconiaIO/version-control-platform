@@ -42,10 +42,16 @@ class ResPartner(models.Model):
         )
         if not partner:
             if isinstance(gh, str):
-                gh = client.user(github_login)
+                try:
+                    gh = client.user(github_login)
+                    name = gh.name or github_login
+                except github3.exceptions.NotFoundError:
+                    name = gh
+            else:
+                name = gh.name or github_login
             return self.create(
                 {
-                    "name": getattr(gh, "name", None) or str(gh),
+                    "name": name,
                     "github_name": github_login,
                     "github_user": True,
                 }

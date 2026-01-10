@@ -7,7 +7,7 @@ from math import sqrt
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 from odoo.addons.portal.controllers.portal import CustomerPortal
@@ -94,6 +94,15 @@ class ContributorsController(CustomerPortal):
             2,
         )
 
+    def _get_field(self, kind):
+        if kind == "contributors":
+            return "partner_id"
+        elif kind == "organizations":
+            return "organization_id"
+        elif kind == "repositories":
+            return "repository_id"
+        return False
+
     @http.route(["/contributors/fetch"], type="json", auth="user", readonly=True)
     def fetch_data(self, organization_id, year, month, kind, period, **values):
         start, end = self._get_dates(year, month, period, **values)
@@ -102,26 +111,131 @@ class ContributorsController(CustomerPortal):
         )
         if not organization:
             return []
-        data = defaultdict(
-            lambda: {
-                "name": "",
-                "github_name": "",
-                "index": 0,
-                "created_pull_requests": 0,
-                "merged_pull_requests": 0,
-                "comments": 0,
-                "reviews": 0,
-            }
+        data = self._generate_data(
+            organization, start, end, self._get_field(kind), kind, **values
         )
-        if kind == "contributors":
-            field = "partner_id"
-        elif kind == "organizations":
-            field = "organization_id"
-        elif kind == "repositories":
-            field = "repository_id"
-        else:
-            return []
+        return {
+            "columns": self._get_columns(kind),
+            "data": self._improve_data(data, kind, **values),
+        }
 
+    def _get_columns(self, kind):
+        if kind == "contributors":
+            return [
+                {"field": "name", "title": _("Name"), "kind": "name"},
+                {
+                    "field": "index",
+                    "title": _("Contributor Index"),
+                    "kind": "float",
+                    "decimals": 2,
+                },
+                {
+                    "field": "created_pull_requests",
+                    "title": _("Created Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_pull_requests",
+                    "title": _("Merged Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        elif kind == "organizations":
+            return [
+                {"field": "name", "title": _("Organization Name"), "kind": "name"},
+                {
+                    "field": "created_pull_requests",
+                    "title": _("Created Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_pull_requests",
+                    "title": _("Merged Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        elif kind == "repositories":
+            return [
+                {"field": "name", "title": _("Repository Name"), "kind": "name"},
+                {
+                    "field": "index",
+                    "title": _("Repository Index"),
+                    "kind": "float",
+                    "decimals": 2,
+                },
+                {
+                    "field": "created_pull_requests",
+                    "title": _("Created Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_pull_requests",
+                    "title": _("Merged Pull Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        return []
+
+    def _get_default_data(self, organization, start, end, field, kind, **values):
+        return {
+            "name": "",
+            "github_name": "",
+            "index": 0,
+            "created_pull_requests": 0,
+            "merged_pull_requests": 0,
+            "comments": 0,
+            "reviews": 0,
+        }
+
+    def _generate_data(self, organization, start, end, field, kind, **values):
+        default_dict = self._get_default_data(
+            organization, start, end, field, kind, **values
+        )
+        data = defaultdict(lambda: default_dict.copy())
+        if not field:
+            return data
         for merged in (
             request.env["contributors.pull.request"]
             .sudo()
@@ -166,7 +280,7 @@ class ContributorsController(CustomerPortal):
             )
         ):
             data[review[field][0]]["reviews"] = review[f"{field}_count"]
-        return self._improve_data(data, kind, **values)
+        return data
 
     def _improve_data(self, data, kind, **kwargs):
         for key, values in data.items():

@@ -15,6 +15,7 @@
                     />
                 </header>
                 <sheet>
+                    <div name="button_box" />
                     <field
                         name="image_1920"
                         widget='image'
