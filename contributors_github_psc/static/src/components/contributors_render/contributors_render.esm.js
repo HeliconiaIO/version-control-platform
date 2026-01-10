@@ -1,5 +1,6 @@
 import {AutoComplete} from "@web/core/autocomplete/autocomplete";
 import {ContributorsRender} from "@contributors_github/components/contributors_render/contributors_render.esm";
+import {_t} from "@web/core/l10n/translation";
 import {onMounted} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
 import {useService} from "@web/core/utils/hooks";
@@ -17,6 +18,7 @@ patch(ContributorsRender.prototype, {
         this.state.pscs = [];
         this.state.pscId = null;
         this.orm = useService("orm");
+        this.selectPsc = _t("Select PSC");
         onMounted(this.fetchPscs.bind(this));
     },
     async fetchPscs() {

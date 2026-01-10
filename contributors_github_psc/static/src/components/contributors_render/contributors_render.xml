@@ -11,6 +11,7 @@
                     class=""
                     resetOnSelect="true"
                     autoSelect="true"
+                    placeholder="selectPsc"
                 />
             </div>
         </xpath>

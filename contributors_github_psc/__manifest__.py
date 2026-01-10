@@ -19,7 +19,6 @@
         "web.assets_frontend": [
             "contributors_github_psc/static/src/components/**/*.esm.js",
             "contributors_github_psc/static/src/components/**/*.xml",
-            "contributors_github_psc/static/src/components/**/*.scss",
         ],
     },
     "demo": [],
