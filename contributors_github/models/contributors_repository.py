@@ -124,7 +124,7 @@ class ContributorsRepository(models.Model):
     def force_update_information(self):
         self.update_information(update_interval_days=365)
 
-    def update_information(self, update_interval_days=None):
+    def update_information(self, update_interval_days=None, client_for_search=0):
         self.ensure_one()
         clients = self.organization_id._get_clients()
         try:
@@ -140,8 +140,8 @@ class ContributorsRepository(models.Model):
             start += timedelta(
                 days=-1
             )  # Add buffer day to avoid missing PRs on boundary dates
-            i = 0
-            for pr in clients[0].search_issues(
+            i = client_for_search % len(clients)
+            for pr in clients[i].search_issues(
                 f"is:pr repo:{self.organization_id.name}/{self.name} "
                 f"updated:{start.isoformat()}..{end.isoformat()}"
             ):
@@ -199,7 +199,7 @@ class ContributorsRepository(models.Model):
             self.sudo().from_date = end.replace(tzinfo=None)
         except github3.exceptions.ForbiddenError as e:
             _logger.error(e)
-            rate = clients[0].rate_limit()
+            rate = clients[i].rate_limit()
             reset = fields.Datetime.to_string(
                 datetime.utcfromtimestamp(rate["resources"]["core"]["reset"])
             )
