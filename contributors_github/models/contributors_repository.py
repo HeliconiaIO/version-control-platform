@@ -166,21 +166,21 @@ class ContributorsRepository(models.Model):
                     )
                 else:
                     opr.sudo().write(pr_data)
-                    for comment in comments:
-                        comment_id = comment.pop("id")
-                        ocomment = self.env["contributors.comment"].search(
-                            [("github_id", "=", comment_id)], limit=1
+                for comment in comments:
+                    comment_id = comment.pop("id")
+                    ocomment = self.env["contributors.comment"].search(
+                        [("github_id", "=", comment_id)], limit=1
+                    )
+                    if not ocomment:
+                        self.env["contributors.comment"].sudo().create(
+                            {
+                                "github_id": comment_id,
+                                "pull_request_id": opr.id,
+                                **comment,
+                            }
                         )
-                        if not ocomment:
-                            self.env["contributors.comment"].sudo().create(
-                                {
-                                    "github_id": comment_id,
-                                    "pull_request_id": opr.id,
-                                    **comment,
-                                }
-                            )
-                        else:
-                            ocomment.sudo().write(comment)
+                    else:
+                        ocomment.sudo().write(comment)
                 for review in reviews:
                     review_id = review.pop("id")
                     oreview = self.env["contributors.review"].search(
