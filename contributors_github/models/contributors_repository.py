@@ -61,9 +61,7 @@ class ContributorsRepository(models.Model):
             {
                 "partner_id": self.env["res.partner"]._get_github_user(pr.user, client),
                 "repository_id": self.id,
-                "branch_id": self.env["contributors.branch"]._get_branch(
-                    self.organization_id, pr.base.ref
-                ),
+                "branch_id": self.organization_id._get_branch(pr.base.ref),
                 "organization_id": self.env["res.partner"]._get_github_organization(
                     pr.head.repo[0], client
                 ),

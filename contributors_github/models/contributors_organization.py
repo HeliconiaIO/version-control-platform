@@ -6,7 +6,7 @@ import logging
 import github3
 import requests
 
-from odoo import fields, models
+from odoo import fields, models, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -79,6 +79,25 @@ class ContributorsOrganization(models.Model):
                 _logger.error(
                     "Error updating organization %s: %s", organization.name, str(e)
                 )
+
+    @tools.cache("self.id", "name")
+    def _get_branch(self, name):
+        branch = self.env["contributors.branch"].search(
+            [("organization_id", "=", self.id), ("name", "=", name)],
+            limit=1,
+        )
+        if not branch:
+            branch = (
+                self.env["contributors.branch"]
+                .sudo()
+                .create(
+                    {
+                        "organization_id": self.id,
+                        "name": name,
+                    }
+                )
+            )
+        return branch.id
 
 
 class ContributorsOrganizationKey(models.Model):
