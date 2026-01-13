@@ -76,7 +76,7 @@ class ContributorsOrganization(models.Model):
                     ),
                     "action": str(result["action"]),
                     "repository_id": self._get_repository(result["component"]),
-                    "branch_id": self._get_branch(result["component"]),
+                    "branch_id": self._get_weblate_branch(result["component"]),
                     "lang_id": self._get_lang(result["translation"]),
                 }
                 if not translation:
@@ -134,7 +134,7 @@ class ContributorsOrganization(models.Model):
         )
 
     @tools.ormcache("self.id", "component")
-    def _get_branch(self, component):
+    def _get_weblate_branch(self, component):
         if not component:
             return False
         parts = component.split("/")
@@ -143,9 +143,7 @@ class ContributorsOrganization(models.Model):
         found = re.match(r"^[\w-]+-(\d+-\d)$", parts[-3])
         if not found:
             return False
-        return self.env["contributors.branch"]._get_branch(
-            self, found.group(1).replace("-", ".")
-        )
+        return self._get_branch(found.group(1))
 
     @tools.ormcache("self.id", "component")
     def _get_repository(self, component):
