@@ -8,7 +8,7 @@ class ContributorsTranslation(models.Model):
     _name = "contributors.translation"
     _description = "Contributors Translation"  # TODO
 
-    integration_id = fields.Char()
+    integration_id = fields.Char(required=True, index=True)
     unit = fields.Char()
     translation = fields.Char()
     component = fields.Char()
@@ -97,3 +97,11 @@ class ContributorsTranslation(models.Model):
         ]
     )
     details = fields.Json()
+
+    _sql_constraints = [
+        (
+            "integration_id_uniq",
+            "unique(integration_id, organization_id)",
+            "The integration ID must be unique.",
+        ),
+    ]
