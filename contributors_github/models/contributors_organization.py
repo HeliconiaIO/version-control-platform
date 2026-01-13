@@ -80,7 +80,7 @@ class ContributorsOrganization(models.Model):
                     "Error updating organization %s: %s", organization.name, str(e)
                 )
 
-    @tools.cache("self.id", "name")
+    @tools.ormcache("self.id", "name")
     def _get_branch(self, name):
         branch = self.env["contributors.branch"].search(
             [("organization_id", "=", self.id), ("name", "=", name)],

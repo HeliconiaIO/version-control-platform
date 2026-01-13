@@ -60,7 +60,7 @@ class ContributorsPullRequestLabel(models.Model):
 
     _sql_constraints = [("name_uniq", "unique(name)", "Label name must be unique.")]
 
-    @tools.ormcache()
+    @tools.ormcache("name")
     def _get_label(self, name):
         label = self.search([("name", "=", name)], limit=1)
         if not label:
