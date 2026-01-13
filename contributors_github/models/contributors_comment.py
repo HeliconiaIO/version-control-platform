@@ -8,7 +8,7 @@ class ContributorsComment(models.Model):
     _name = "contributors.comment"
     _description = "Contributors Comment"  # TODO
 
-    github_id = fields.Char(string="GitHub ID", readonly=True, required=True)
+    github_id = fields.Char(readonly=True, required=True, index=True)
     body = fields.Html(readonly=True)
     partner_id = fields.Many2one(
         comodel_name="res.partner",
