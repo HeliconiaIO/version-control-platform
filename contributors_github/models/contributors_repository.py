@@ -17,7 +17,7 @@ class ContributorsRepository(models.Model):
     _name = "contributors.repository"
     _description = "Contributors Repository"
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, index=True)
     description = fields.Char(readonly=True)
     organization_id = fields.Many2one(
         comodel_name="contributors.organization",

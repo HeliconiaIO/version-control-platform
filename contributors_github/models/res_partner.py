@@ -3,7 +3,7 @@
 
 import github3
 
-from odoo import fields, models
+from odoo import fields, models, tools
 
 
 class ResPartner(models.Model):
@@ -33,63 +33,77 @@ class ResPartner(models.Model):
         ),
     ]
 
-    def _get_github_user(self, gh, client):
-        if not gh:
-            return False
-        github_login = str(gh)
+    @tools.ormcache("github_login")
+    def _get_github_user_id(self, github_login):
         partner = self.with_context(active_test=False).search(
             [("github_name", "=ilike", github_login)], limit=1
         )
         if not partner:
-            if isinstance(gh, str):
-                try:
-                    gh = client.user(github_login)
-                    name = gh.name or github_login
-                except github3.exceptions.NotFoundError:
-                    name = gh
-            else:
-                name = gh.name or github_login
-            return self.create(
-                {
-                    "name": name,
-                    "github_name": github_login,
-                    "github_user": True,
-                }
-            ).id
+            return False
         if not partner.github_user:
             partner.github_user = True
         return partner.id
 
-    def _get_github_organization(self, gh, client):
-        if not gh:
-            return False
+    @tools.ormcache("github_login")
+    def _get_github_organization_id(self, github_login):
         partner = self.with_context(active_test=False).search(
-            [("github_name", "=ilike", str(gh))], limit=1
+            [("github_name", "=ilike", github_login)], limit=1
         )
         if not partner:
-            try:
-                org = client.organization(str(gh))
-                if org:
-                    return self.create(
-                        {
-                            "name": org.name or str(gh),
-                            "github_name": str(gh),
-                            "github_organization": True,
-                        }
-                    ).id
-            except github3.exceptions.NotFoundError:
-                user = client.user(str(gh))
-                name = user.name or str(gh)
-            except github3.exceptions.ForbiddenError:
-                name = str(gh)
-            return self.create(
-                {
-                    "name": name,
-                    "github_name": str(gh),
-                    "github_user": True,
-                    "github_organization": True,
-                }
-            ).id
+            return False
         if not partner.github_organization:
             partner.github_organization = True
         return partner.id
+
+    def _get_github_user(self, gh, client):
+        if not gh:
+            return False
+        github_login = str(gh)
+        partner = self._get_github_user_id(github_login)
+        if partner:
+            return partner
+        if isinstance(gh, str):
+            try:
+                gh = client.user(github_login)
+                name = gh.name or github_login
+            except github3.exceptions.NotFoundError:
+                name = gh
+        else:
+            name = gh.name or github_login
+        return self.create(
+            {
+                "name": name,
+                "github_name": github_login,
+                "github_user": True,
+            }
+        ).id
+
+    def _get_github_organization(self, gh, client):
+        if not gh:
+            return False
+        partner = self._get_github_organization_id(str(gh))
+        if partner:
+            return partner
+        try:
+            org = client.organization(str(gh))
+            if org:
+                return self.create(
+                    {
+                        "name": org.name or str(gh),
+                        "github_name": str(gh),
+                        "github_organization": True,
+                    }
+                ).id
+        except github3.exceptions.NotFoundError:
+            user = client.user(str(gh))
+            name = user.name or str(gh)
+        except github3.exceptions.ForbiddenError:
+            name = str(gh)
+        return self.create(
+            {
+                "name": name,
+                "github_name": str(gh),
+                "github_user": True,
+                "github_organization": True,
+            }
+        ).id

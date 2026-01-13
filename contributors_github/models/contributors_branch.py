@@ -1,7 +1,7 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import fields, models, tools
 
 
 class ContributorsBranch(models.Model):
@@ -18,6 +18,7 @@ class ContributorsBranch(models.Model):
         ("name_uniq", "unique(name, organization_id)", "Branch name must be unique.")
     ]
 
+    @tools.cache("organization.id", "name")
     def _get_branch(self, organization, name):
         branch = self.search(
             [("organization_id", "=", organization.id), ("name", "=", name)],

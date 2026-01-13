@@ -8,7 +8,7 @@ class ContributorsPullRequest(models.Model):
     _name = "contributors.pull.request"
     _description = "Contributors Pull Request"  # TODO
 
-    github_id = fields.Char(string="GitHub ID", readonly=True)
+    github_id = fields.Char(string="GitHub ID", readonly=True, index=True)
     name = fields.Char(readonly=True)
     partner_id = fields.Many2one(
         comodel_name="res.partner",
