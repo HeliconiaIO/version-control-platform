@@ -6,6 +6,7 @@ from datetime import datetime
 from math import sqrt
 
 from dateutil.relativedelta import relativedelta
+from markupsafe import Markup
 
 from odoo import _, http
 from odoo.http import request
@@ -128,6 +129,11 @@ class ContributorsController(CustomerPortal):
                     "title": _("Contributor Index"),
                     "kind": "float",
                     "decimals": 2,
+                    "tooltip": Markup(
+                        request.env["ir.qweb"]._render(
+                            "contributors_github.contributor_index_tooltip", {}
+                        )
+                    ),
                 },
                 {
                     "field": "created_pull_requests",
@@ -196,6 +202,7 @@ class ContributorsController(CustomerPortal):
                     "title": _("Repository Index"),
                     "kind": "float",
                     "decimals": 2,
+                    "tooltip": Markup("<div>HOLA</div>"),
                 },
                 {
                     "field": "created_pull_requests",

@@ -1,18 +1,15 @@
-import {Component, onMounted, useState} from "@odoo/owl";
-
+import {Component, markup, onMounted, useState} from "@odoo/owl";
 import {Dropdown} from "@web/core/dropdown/dropdown";
 import {DropdownItem} from "@web/core/dropdown/dropdown_item";
+import {PopoverTooltip} from "../popover_tooltip/popover_tooltip.esm";
 import {formatFloat} from "@web/core/utils/numbers";
 import {registry} from "@web/core/registry";
+import {renderToString} from "@web/core/utils/render";
 import {rpc} from "@web/core/network/rpc";
+import {usePopover} from "@web/core/popover/popover_hook";
 
-/**
- * This Component is a signature request form. It uses
- * @see NameAndSignature for the input fields, adds a submit
- * button, and handles the RPC to save the result.
- */
 export class ContributorsRender extends Component {
-    static template = "cotributors_github.ContributorsRender";
+    static template = "contributors_github.ContributorsRender";
     setup() {
         const year = new Date().getFullYear();
         const month = new Date().getMonth() + 1;
@@ -32,10 +29,21 @@ export class ContributorsRender extends Component {
             kind: "contributors",
         });
         onMounted(this.fetchData.bind(this));
+        this.popover = usePopover(PopoverTooltip);
     }
     selectPeriod(period) {
         this.state.period = period;
         this.fetchData();
+    }
+    initColumnTooltip(ev, column) {
+        this.popover.open(ev.currentTarget, {
+            content: markup(column.tooltip),
+        });
+    }
+    initDateTooltip(ev) {
+        this.popover.open(ev.currentTarget, {
+            content: markup(renderToString("contributors_github.DateSelectionTooltip")),
+        });
     }
     async fetchData() {
         const data = await rpc("/contributors/fetch", this.getParameters());

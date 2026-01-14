@@ -8,6 +8,29 @@
             />
         </t>
     </template>
+    <template id="contributor_index_tooltip" name="Contributor Index Tooltip">
+        <div class="p-2">
+            The Contributor Index is calculated based on various contribution metrics to provide an overall score representing a contributor's impact.
+        </div>
+        <div class="p-2">
+            It is calculated as follows:
+        </div>
+        <div class="p-2">
+            <math>
+                <mi>Merged Pull Requests</mi>
+                <mo>+</mo>
+                <msqrt>
+                    <mi>Created Pull Requests</mi>
+                </msqrt>
+                <mo>+</mo>
+                <mi>Comments</mi>
+                <mo>+</mo>
+                <msqrt>
+                    <mi>Reviews</mi>
+                </msqrt>
+            </math>
+        </div>
+    </template>
     <template id="contributors_template" name="View contributors">
         <t t-call="portal.portal_layout">
             <t t-set="my_details" t-value="False" />
