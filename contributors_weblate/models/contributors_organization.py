@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import requests
 
-from odoo import _, fields, models, tools
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -21,6 +21,10 @@ class ContributorsOrganization(models.Model):
     weblate_load_delay = fields.Integer(
         help="Number of days to load each time", default=7
     )
+
+    @api.model
+    def _translation_actions(self):
+        return ["2", "5", "8", "25", "27"]
 
     def get_weblate_data(self):
         self.ensure_one()
@@ -43,6 +47,7 @@ class ContributorsOrganization(models.Model):
                 ).isoformat(),
                 "timestamp_before": before_date.isoformat(),
                 "format": "json",
+                "action": self._translation_actions(),
             },
             timeout=10,
             headers=auth,

@@ -31,9 +31,6 @@ class ContributorsPSCController(ContributorsController):
         data["translations"] = 0
         return data
 
-    def _translation_actions(self):
-        return ["2", "5", "8", "25", "27"]
-
     def _get_translation_domain(
         self,
         organization,
@@ -45,7 +42,7 @@ class ContributorsPSCController(ContributorsController):
         **values,
     ):
         if actions is None:
-            actions = self._translation_actions()
+            actions = request.env["contributors.organization"]._translation_actions()
         domain = [
             ("organization_id", "=", organization.id),
             ("date", ">=", start),
