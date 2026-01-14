@@ -58,7 +58,10 @@ class ResPartner(models.Model):
     def _get_github_user(self, gh, client):
         if not gh:
             return False
-        github_login = str(gh)
+        if isinstance(gh, github3.users.User):
+            github_login = gh.login
+        else:
+            github_login = str(gh)
         partner = self._get_github_user_id(github_login)
         if partner:
             return partner
@@ -69,7 +72,11 @@ class ResPartner(models.Model):
             except github3.exceptions.NotFoundError:
                 name = gh
         else:
-            name = gh.name or github_login
+            if hasattr(gh, "name"):
+                name = gh.name or github_login
+            else:
+                name = github_login
+        self.env.registry.clear_cache()
         return self.create(
             {
                 "name": name,
@@ -84,16 +91,17 @@ class ResPartner(models.Model):
         partner = self._get_github_organization_id(str(gh))
         if partner:
             return partner
+        self.env.registry.clear_cache()
         try:
             org = client.organization(str(gh))
-            if org:
-                return self.create(
-                    {
-                        "name": org.name or str(gh),
-                        "github_name": str(gh),
-                        "github_organization": True,
-                    }
-                ).id
+
+            return self.create(
+                {
+                    "name": org.name or str(gh),
+                    "github_name": str(gh),
+                    "github_organization": True,
+                }
+            ).id
         except github3.exceptions.NotFoundError:
             user = client.user(str(gh))
             name = user.name or str(gh)
