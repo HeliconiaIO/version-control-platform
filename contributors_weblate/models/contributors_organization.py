@@ -52,10 +52,18 @@ class ContributorsOrganization(models.Model):
             timeout=10,
             headers=auth,
         )
+        req.raise_for_status()
         # self.weblate_last_update = before_date
         total = 0
         client = self._get_clients()[0]
         while True:
+            if req.json().get("errors"):
+                raise ValidationError(
+                    _(
+                        "Error while fetching Weblate data for organization "
+                        f"{self.name}: {req.json().get('errors')}"
+                    )
+                )
             results = req.json().get("results", [])
             max_total = req.json().get("count", 0)
             for result in results:
@@ -97,6 +105,7 @@ class ContributorsOrganization(models.Model):
                     )
             if req.json().get("next"):
                 req = requests.get(req.json().get("next"), timeout=10, headers=auth)
+                req.raise_for_status()
             else:
                 break
         self.weblate_last_update = before_date
