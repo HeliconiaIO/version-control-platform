@@ -1,7 +1,7 @@
 <templates id="template" xml:space="preserve">
 
     <!-- Template for the widget SignatureForm. -->
-    <t t-inherit="cotributors_github.ContributorsRender" t-inherit-mode="extension">
+    <t t-inherit="contributors_github.ContributorsRender" t-inherit-mode="extension">
         <xpath expr="//Dropdown/.." position="before">
             <div class="o_input col">
                 <AutoComplete
