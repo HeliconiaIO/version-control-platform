@@ -181,6 +181,12 @@ class ContributorsController(CustomerPortal):
                     "kind": "float",
                     "decimals": 0,
                 },
+                {
+                    "field": "developers",
+                    "title": _("Developers"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
             ]
         elif kind == "repositories":
             return [
@@ -215,6 +221,12 @@ class ContributorsController(CustomerPortal):
                     "kind": "float",
                     "decimals": 0,
                 },
+                {
+                    "field": "developers",
+                    "title": _("Developers"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
             ]
         return []
 
@@ -227,6 +239,7 @@ class ContributorsController(CustomerPortal):
             "merged_pull_requests": 0,
             "comments": 0,
             "reviews": 0,
+            "developers": 0,
         }
 
     def _generate_data(self, organization, start, end, field, kind, **values):
@@ -253,11 +266,15 @@ class ContributorsController(CustomerPortal):
             .read_group(
                 self._get_created_domain(organization, start, end, **values)
                 + [(field, "!=", False)],
-                [field],
+                [field, "partner_id:count_distinct"]
+                if field != "partner_id"
+                else [field],
                 [field],
             )
         ):
             data[pr[field][0]]["created_pull_requests"] = pr[f"{field}_count"]
+            if field != "partner_id":
+                data[pr[field][0]]["developers"] = pr["partner_id"]
         for comment in (
             request.env["contributors.comment"]
             .sudo()
