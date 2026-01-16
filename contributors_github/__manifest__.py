@@ -31,5 +31,8 @@
             "contributors_github/static/src/components/**/*.xml",
             "contributors_github/static/src/components/**/*.scss",
         ],
+        "web.assets_tests": [
+            "contributors_github/static/tests/**/*",
+        ],
     },
 }
