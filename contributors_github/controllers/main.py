@@ -202,7 +202,11 @@ class ContributorsController(CustomerPortal):
                     "title": _("Repository Index"),
                     "kind": "float",
                     "decimals": 2,
-                    "tooltip": Markup("<div>HOLA</div>"),
+                    "tooltip": Markup(
+                        request.env["ir.qweb"]._render(
+                            "contributors_github.contributor_index_tooltip", {}
+                        )
+                    ),
                 },
                 {
                     "field": "created_pull_requests",
