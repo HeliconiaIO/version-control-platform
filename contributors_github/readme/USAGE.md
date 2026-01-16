@@ -11,7 +11,7 @@ The system will start fetching the data automatically.
 Usually, the first load can take a lot of time and you could find time constrains on your Odoo database.
 For this reason we recommend to stop the cron in this first load and execute the following code in your shell once you have all the repositories created:
 
-```python:
+``` python
 from datetime import date, datetime, timedelta
 import time
 self = self.env["contributors.organization"].search([], limit=1) # Use the organization you prefer

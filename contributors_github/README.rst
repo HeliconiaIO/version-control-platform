@@ -50,7 +50,7 @@ constrains on your Odoo database. For this reason we recommend to stop
 the cron in this first load and execute the following code in your shell
 once you have all the repositories created:
 
-.. code:: python:
+.. code:: python
 
    from datetime import date, datetime, timedelta
    import time
