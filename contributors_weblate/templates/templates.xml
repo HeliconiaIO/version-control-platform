@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="partner_detail" inherit_id="contributors_github.partner_detail">
+        <xpath expr="//div[hasclass('o_contributors_data')]" position="inside">
+            <div
+                class="col-6 col-md-3 mb-3 o_contributors_translations"
+                t-if="partner.github_user"
+            >
+                <h5>Translations</h5>
+                <span class="h3" t-esc="partner.weblate_translations" />
+            </div>
+        </xpath>
+    </template>
+</odoo>

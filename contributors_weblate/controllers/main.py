@@ -24,38 +24,6 @@ class ContributorsPSCController(ContributorsController):
             )
         return columns
 
-    def _get_default_data(self, organization, start, end, field, kind, **values):
-        data = super()._get_default_data(
-            organization, start, end, field, kind, **values
-        )
-        data["translations"] = 0
-        return data
-
-    def _get_translation_domain(
-        self,
-        organization,
-        start,
-        end,
-        psc_id=None,
-        lang_id=None,
-        actions=None,
-        **values,
-    ):
-        if actions is None:
-            actions = request.env["contributors.organization"]._translation_actions()
-        domain = [
-            ("organization_id", "=", organization.id),
-            ("date", ">=", start),
-            ("date", "<", end),
-            ("action", "in", actions),
-        ]
-        if lang_id:
-            domain.append(("lang_id", "=", lang_id))
-        if psc_id and "psc_id" in request.env["contributors.repository"]._fields:
-            # To avoid an extra module we add the psc_id filter here
-            domain.append(("repository_id.psc_id", "=", int(psc_id)))
-        return domain
-
     def _improve_data(self, data, kind, **kwargs):
         data = super()._improve_data(data, kind, **kwargs)
         if kind == "translations":
@@ -63,33 +31,4 @@ class ContributorsPSCController(ContributorsController):
                 partner = request.env["res.partner"].browse(key)
                 values["name"] = self._get_partner_name(partner, **kwargs)
                 values["github_name"] = partner.github_name
-        return data
-
-    def _generate_data(
-        self, organization, start, end, field, kind, lang_id=None, **values
-    ):
-        data = super()._generate_data(organization, start, end, field, kind, **values)
-        if kind == "translations" and not field:
-            field = "partner_id"
-        if (
-            kind in ["contributors", "repositories", "translations"]
-            and organization.weblate_url
-        ):
-            for merged in (
-                request.env["contributors.translation"]
-                .sudo()
-                .read_group(
-                    self._get_translation_domain(
-                        organization,
-                        start,
-                        end,
-                        lang_id=lang_id if kind == "translations" else None,
-                        **values,
-                    )
-                    + [(field, "!=", False)],
-                    [field],
-                    [field],
-                )
-            ):
-                data[merged[field][0]]["translations"] = merged[f"{field}_count"]
         return data

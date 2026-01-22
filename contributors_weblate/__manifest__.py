@@ -17,6 +17,7 @@
         "views/contributors_translation.xml",
         "views/contributors_repository.xml",
         "views/contributors_organization.xml",
+        "templates/templates.xml",
     ],
     "demo": [],
     "assets": {

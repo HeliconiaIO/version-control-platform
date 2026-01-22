@@ -188,3 +188,55 @@ class ContributorsOrganization(models.Model):
                     "Error while updating Weblate data for organization "
                     f"{organization.name}: {e}"
                 )
+
+    def _get_default_data(self, start, end, field, kind, **values):
+        data = super()._get_default_data(start, end, field, kind, **values)
+        data["translations"] = 0
+        return data
+
+    def _get_translation_domain(
+        self,
+        start,
+        end,
+        psc_id=None,
+        lang_id=None,
+        actions=None,
+        **values,
+    ):
+        if actions is None:
+            actions = self._translation_actions()
+        domain = [
+            ("organization_id", "=", self.ids),
+            ("date", ">=", start),
+            ("date", "<", end),
+            ("action", "in", actions),
+        ]
+        if lang_id:
+            domain.append(("lang_id", "=", lang_id))
+        if psc_id and "psc_id" in self.env["contributors.repository"]._fields:
+            # To avoid an extra module we add the psc_id filter here
+            domain.append(("repository_id.psc_id", "=", int(psc_id)))
+        return domain
+
+    def _generate_data(self, start, end, field, kind, lang_id=None, **values):
+        data = super()._generate_data(start, end, field, kind, **values)
+        if kind == "translations" and not field:
+            field = "partner_id"
+        if kind in ["contributors", "repositories", "translations"]:
+            for merged in (
+                self.env["contributors.translation"]
+                .sudo()
+                .read_group(
+                    self._get_translation_domain(
+                        start,
+                        end,
+                        lang_id=lang_id if kind == "translations" else None,
+                        **values,
+                    )
+                    + [(field, "!=", False)],
+                    [field],
+                    [field],
+                )
+            ):
+                data[merged[field][0]]["translations"] = merged[f"{field}_count"]
+        return data
