@@ -101,3 +101,27 @@ class ContributorsOrganization(models.Model):
                             }
                         )
         return res
+
+    def _get_merged_domain(self, start, end, psc_id=None, **values):
+        result = super()._get_merged_domain(start, end, psc_id=psc_id, **values)
+        if psc_id:
+            result.append(("repository_id.psc_id", "=", int(psc_id)))
+        return result
+
+    def _get_created_domain(self, start, end, psc_id=None, **values):
+        result = super()._get_created_domain(start, end, psc_id=psc_id, **values)
+        if psc_id:
+            result.append(("repository_id.psc_id", "=", int(psc_id)))
+        return result
+
+    def _get_comments_domain(self, start, end, psc_id=None, **values):
+        result = super()._get_comments_domain(start, end, psc_id=psc_id, **values)
+        if psc_id:
+            result.append(("repository_id.psc_id", "=", int(psc_id)))
+        return result
+
+    def _get_reviews_domain(self, start, end, psc_id=None, **values):
+        result = super()._get_reviews_domain(start, end, psc_id=psc_id, **values)
+        if psc_id:
+            result.append(("repository_id.psc_id", "=", int(psc_id)))
+        return result
