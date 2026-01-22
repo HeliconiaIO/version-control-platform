@@ -2,9 +2,13 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
 import logging
+from collections import defaultdict
+from datetime import datetime
+from math import sqrt
 
 import github3
 import requests
+from dateutil.relativedelta import relativedelta
 
 from odoo import fields, models, tools
 
@@ -98,6 +102,130 @@ class ContributorsOrganization(models.Model):
                 )
             )
         return branch.id
+
+    def _get_merged_domain(self, start, end, **values):
+        return [
+            ("repository_id.organization_id", "in", self.ids),
+            ("is_merged", "=", True),
+            ("closed_at", ">=", start),
+            ("closed_at", "<", end),
+        ]
+
+    def _get_created_domain(self, start, end, **values):
+        return [
+            ("repository_id.organization_id", "in", self.ids),
+            ("created_at", ">=", start),
+            ("created_at", "<", end),
+        ]
+
+    def _get_comments_domain(self, start, end, **values):
+        return [
+            ("pull_request_id.repository_id.organization_id", "in", self.ids),
+            ("created_at", ">=", start),
+            ("created_at", "<", end),
+        ]
+
+    def _get_reviews_domain(self, start, end, **values):
+        return [
+            ("pull_request_id.repository_id.organization_id", "in", self.ids),
+            ("submitted_at", ">=", start),
+            ("submitted_at", "<", end),
+        ]
+
+    def _get_index(self, data):
+        return round(
+            sqrt(data["created_pull_requests"])
+            + data["merged_pull_requests"]
+            + sqrt(data["comments"])
+            + data["reviews"],
+            2,
+        )
+
+    def _get_default_data(self, start, end, field, kind, **values):
+        return {
+            "name": "",
+            "github_name": "",
+            "index": 0,
+            "created_pull_requests": 0,
+            "merged_pull_requests": 0,
+            "comments": 0,
+            "reviews": 0,
+            "developers": 0,
+        }
+
+    def _generate_data(self, start, end, field, kind, extra_domain=None, **values):
+        if extra_domain is None:
+            extra_domain = []
+        default_dict = self._get_default_data(start, end, field, kind, **values)
+        data = defaultdict(lambda: default_dict.copy())
+        if not field:
+            return data
+        for merged in (
+            self.env["contributors.pull.request"]
+            .sudo()
+            .read_group(
+                self._get_merged_domain(start, end, **values)
+                + extra_domain
+                + [(field, "!=", False)],
+                [field],
+                [field],
+            )
+        ):
+            data[merged[field][0]]["merged_pull_requests"] = merged[f"{field}_count"]
+        for pr in (
+            self.env["contributors.pull.request"]
+            .sudo()
+            .read_group(
+                self._get_created_domain(start, end, **values)
+                + extra_domain
+                + [(field, "!=", False)],
+                [field, "partner_id:count_distinct"]
+                if field != "partner_id"
+                else [field],
+                [field],
+            )
+        ):
+            data[pr[field][0]]["created_pull_requests"] = pr[f"{field}_count"]
+            if field != "partner_id":
+                data[pr[field][0]]["developers"] = pr["partner_id"]
+        for comment in (
+            self.env["contributors.comment"]
+            .sudo()
+            .read_group(
+                self._get_comments_domain(start, end, **values)
+                + extra_domain
+                + [(field, "!=", False)],
+                [field],
+                [field],
+            )
+        ):
+            data[comment[field][0]]["comments"] = comment[f"{field}_count"]
+        for review in (
+            self.env["contributors.review"]
+            .sudo()
+            .read_group(
+                self._get_reviews_domain(start, end, **values)
+                + extra_domain
+                + [(field, "!=", False)],
+                [field],
+                [field],
+            )
+        ):
+            data[review[field][0]]["reviews"] = review[f"{field}_count"]
+        return data
+
+    def _get_dates(self, year, month, period, **values):
+        if month == 12:
+            end = datetime(year + 1, 1, 1, 0, 0, 0)
+        else:
+            end = datetime(year, month + 1, 1, 0, 0, 0)
+        if period == "YTD":
+            start = datetime(year, 1, 1, 0, 0, 0)
+        elif period == "MAT":
+            start = end - relativedelta(years=1)
+        else:
+            start = datetime(year, month, 1, 0, 0, 0)
+        return start, end
 
 
 class ContributorsOrganizationKey(models.Model):

@@ -9,7 +9,7 @@
     "author": "Dixmit, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA-contributors/contributors-module",
     "maintainers": ["etobella"],
-    "depends": ["portal"],
+    "depends": ["portal", "website_partner"],
     "data": [
         "security/ir.model.access.csv",
         "views/menu.xml",

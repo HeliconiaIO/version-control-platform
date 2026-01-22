@@ -3,7 +3,7 @@
 
 import github3
 
-from odoo import fields, models, tools
+from odoo import api, fields, models, tools
 
 
 class ResPartner(models.Model):
@@ -24,6 +24,22 @@ class ResPartner(models.Model):
         help="Check if this partner represents a GitHub user",
         readonly=True,
     )
+    github_merged_pull_requests = fields.Integer(
+        compute="_compute_github_contributions",
+        string="Merged Pull Requests",
+        prefetch=False,
+    )
+    github_created_pull_requests = fields.Integer(
+        compute="_compute_github_contributions",
+        string="Created Pull Requests",
+        prefetch=False,
+    )
+    github_comments = fields.Integer(
+        compute="_compute_github_contributions", string="Comments", prefetch=False
+    )
+    github_reviews = fields.Integer(
+        compute="_compute_github_contributions", string="Reviews", prefetch=False
+    )
 
     _sql_constraints = [
         (
@@ -32,6 +48,42 @@ class ResPartner(models.Model):
             "The GitHub username must be unique across partners.",
         ),
     ]
+
+    @api.depends("github_name")
+    def _compute_github_contributions(self):
+        self.filtered(lambda p: p.github_user)._compute_github_contributions_field(
+            "partner_id"
+        )
+        self.filtered(lambda p: not p.github_user)._compute_github_contributions_field(
+            "organization_id"
+        )
+
+    @api.model
+    def _get_contributors_field_map(self):
+        return {
+            "github_merged_pull_requests": "merged_pull_requests",
+            "github_created_pull_requests": "created_pull_requests",
+            "github_comments": "comments",
+            "github_reviews": "reviews",
+        }
+
+    def _compute_github_contributions_field(self, field):
+        today = fields.Date.today()
+        start, end = self.env["contributors.organization"]._get_dates(
+            today.year, today.month, "MAT"
+        )
+        data = (
+            self.env["contributors.organization"]
+            .search([])
+            ._generate_data(
+                start=start, end=end, field=field, kind="user", extra_domain=[]
+            )
+        )
+        field_map = self._get_contributors_field_map()
+        for partner in self:
+            partner.update(
+                {key: data[partner.id].get(field_map[key], 0) for key in field_map}
+            )
 
     @tools.ormcache("github_login")
     def _get_github_user_id(self, github_login):

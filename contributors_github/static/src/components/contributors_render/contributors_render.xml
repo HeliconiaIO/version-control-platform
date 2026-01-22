@@ -127,10 +127,7 @@
                             </t>
                             <t t-if="column.kind === 'name'">
                                 <td>
-                                    <a
-                                        t-att-href="'https://github.com/' + row.github_name"
-                                        t-esc="row[column.field]"
-                                    />
+                                    <a t-att-href="row.url" t-esc="row[column.field]" />
                                 </td>
                             </t>
                             <t t-if="column.kind === 'string'">
