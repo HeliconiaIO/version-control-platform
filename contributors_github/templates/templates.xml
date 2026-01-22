@@ -111,19 +111,19 @@
         </xpath>
         <xpath expr="//div[@t-field='partner.website_description']" position="after">
             <div t-if="partner.github_name" class="row mt-4 o_contributors_data">
-                <div class="col-6 col-md-3 mb-3 o_contributors_merged_pull_requests">
+                <div class="col-6 col-md-2 mb-3 o_contributors_merged_pull_requests">
                     <h5>Merged Pull Requests</h5>
                     <span class="h3" t-esc="partner.github_merged_pull_requests" />
                 </div>
-                <div class="col-6 col-md-3 mb-3 o_contributors_created_pull_requests">
+                <div class="col-6 col-md-2 mb-3 o_contributors_created_pull_requests">
                     <h5>Created Pull Requests</h5>
                     <span class="h3" t-esc="partner.github_created_pull_requests" />
                 </div>
-                <div class="col-6 col-md-3 mb-3 o_contributors_comments">
+                <div class="col-6 col-md-2 mb-3 o_contributors_comments">
                     <h5>Comments</h5>
                     <span class="h3" t-esc="partner.github_comments" />
                 </div>
-                <div class="col-6 col-md-3 mb-3 o_contributors_reviews">
+                <div class="col-6 col-md-2 mb-3 o_contributors_reviews">
                     <h5>Reviews</h5>
                     <span class="h3" t-esc="partner.github_reviews" />
                 </div>
