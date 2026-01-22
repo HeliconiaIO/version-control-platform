@@ -3,7 +3,7 @@
     <template id="partner_detail" inherit_id="contributors_github.partner_detail">
         <xpath expr="//div[hasclass('o_contributors_data')]" position="inside">
             <div
-                class="col-6 col-md-3 mb-3 o_contributors_translations"
+                class="col-6 col-md-2 mb-3 o_contributors_translations"
                 t-if="partner.github_user"
             >
                 <h5>Translations</h5>
