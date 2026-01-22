@@ -1,7 +1,7 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ContributorsOrganizationPsc(models.Model):
@@ -19,3 +19,9 @@ class ContributorsOrganizationPsc(models.Model):
         "res.partner",
         readonly=True,
     )
+    url = fields.Char(compute="_compute_url")
+
+    @api.depends("organization_id", "key")
+    def _compute_url(self):
+        for record in self:
+            record.url = f"https://github.com/orgs/{record.organization_id.name}/projects/{record.key}"

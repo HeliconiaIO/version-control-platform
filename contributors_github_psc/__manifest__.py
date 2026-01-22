@@ -14,6 +14,7 @@
         "security/ir.model.access.csv",
         "views/contributors_organization_psc.xml",
         "views/contributors_organization.xml",
+        "templates/templates.xml",
     ],
     "assets": {
         "web.assets_frontend": [

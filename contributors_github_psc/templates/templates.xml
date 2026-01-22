@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="partner_detail" inherit_id="contributors_github.partner_detail">
+        <xpath expr="//div[hasclass('o_contributors_data')]" position="after">
+            <div t-if="partner.github_user and partner.psc_ids">
+                <h4>Project Steering Committees</h4>
+                <ul>
+                    <t t-foreach="partner.psc_ids" t-as="psc">
+                        <li>
+                            <a
+                                t-att-href="psc.url"
+                                t-att-title="psc.name"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                <t t-esc="psc.name" />
+                            </a>
+                        </li>
+                    </t>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+</odoo>
