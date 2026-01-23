@@ -11,3 +11,9 @@ class ResPartner(models.Model):
         comodel_name="contributors.organization.psc",
         readonly=True,
     )
+
+    def _get_contributors_name(self, kind, psc_id=None, **kwargs):
+        name = super()._get_contributors_name(kind, **kwargs)
+        if kind == "contributors" and psc_id and psc_id in self.psc_ids.ids:
+            name += " ★"
+        return name
