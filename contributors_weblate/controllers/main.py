@@ -30,5 +30,5 @@ class ContributorsPSCController(ContributorsController):
             for key, values in data.items():
                 partner = request.env["res.partner"].browse(key)
                 values["name"] = self._get_partner_name(partner, **kwargs)
-                values["github_name"] = partner.github_name
+                values["url"] = partner._get_contributor_url()
         return data
