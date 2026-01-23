@@ -48,13 +48,13 @@ repos:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
       - id: oca-fix-manifest-website
-        args: ["https://github.com/OCA-contributors/contributors-module"]
+        args: ["https://github.com/OCA/version-control-platform"]
       - id: oca-gen-addon-readme
         args:
           - --addons-dir=.
           - --branch=18.0
-          - --org-name=OCA-contributors
-          - --repo-name=contributors-module
+          - --org-name=OCA
+          - --repo-name=version-control-platform
           - --if-source-changed
           - --keep-source-digest
           - --convert-fragments-to-markdown
