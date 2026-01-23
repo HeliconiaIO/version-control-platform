@@ -167,3 +167,13 @@ class ResPartner(models.Model):
                 "github_organization": True,
             }
         ).id
+
+    def _get_contributor_url(self):
+        if self.is_published and self.website_url:
+            return self.website_url
+        if self.github_name:
+            return f"https://github.com/{self.github_name}"
+        return False
+
+    def _get_contributors_name(self, kind, **kwargs):
+        return self.name

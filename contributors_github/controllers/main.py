@@ -200,28 +200,17 @@ class ContributorsController(CustomerPortal):
         for key, values in data.items():
             if kind == "contributors":
                 partner = request.env["res.partner"].browse(key)
-                values["name"] = self._get_partner_name(partner, **kwargs)
-                values["github_name"] = partner.github_name
-                values["url"] = (partner.is_published and partner.website_url) or (
-                    f"https://github.com/{partner.github_name}"
-                )
+                values["name"] = partner._get_contributors_name(kind, **kwargs)
+                values["url"] = partner._get_contributor_url()
                 values["index"] = self._get_index(values)
             elif kind == "organizations":
                 organization = request.env["res.partner"].browse(key)
-                values["name"] = organization.name
-                github_name = organization.github_name or organization.name
-                values["github_name"] = github_name
-                values["url"] = (
-                    organization.is_published and organization.website_url
-                ) or (f"https://github.com/{github_name}")
+                values["name"] = organization._get_contributors_name(kind, **kwargs)
+                values["url"] = organization._get_contributor_url()
             elif kind == "repositories":
                 repository = request.env["contributors.repository"].browse(key)
                 values["name"] = repository.name
                 github_name = f"{repository.organization_id.name}/{repository.name}"
-                values["github_name"] = github_name
                 values["url"] = f"https://github.com/{github_name}"
                 values["index"] = self._get_index(values)
         return data
-
-    def _get_partner_name(self, partner, **kwargs):
-        return partner.name
