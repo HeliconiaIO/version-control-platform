@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.35
+_commit: v1.36
 _src_path: https://github.com/OCA/oca-addons-repo-template.git
 additional_ruff_rules: []
 ci: GitHub
@@ -16,12 +16,13 @@ include_wkhtmltopdf: false
 odoo_test_flavor: Both
 odoo_version: 18.0
 org_name: Odoo Community Association (OCA)
-org_slug: OCA-contributors
+org_slug: OCA
 rebel_module_groups: []
-repo_description: ''
-repo_name: Modules for contributors
-repo_slug: contributors-module
-repo_website: https://github.com/OCA-contributors/contributors-module
+repo_description: Version Control Platform allows to import Git information and other
+    kind of contributions in your odoo system
+repo_name: Version Control Platform configuration
+repo_slug: version-control-platform
+repo_website: https://github.com/OCA/version-control-platform
 use_pyproject_toml: true
 use_ruff: true
 

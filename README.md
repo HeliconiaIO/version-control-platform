@@ -1,15 +1,15 @@
+[![Support the OCA](https://odoo-community.org/readme-banner-image)](https://odoo-community.org/get-involved?utm_source=repo-readme)
 
-<!-- /!\ Non OCA Context : Set here the badge of your runbot / runboat instance. -->
-[![Pre-commit Status](https://github.com/OCA-contributors/contributors-module/actions/workflows/pre-commit.yml/badge.svg?branch=18.0)](https://github.com/OCA-contributors/contributors-module/actions/workflows/pre-commit.yml?query=branch%3A18.0)
-[![Build Status](https://github.com/OCA-contributors/contributors-module/actions/workflows/test.yml/badge.svg?branch=18.0)](https://github.com/OCA-contributors/contributors-module/actions/workflows/test.yml?query=branch%3A18.0)
-[![codecov](https://codecov.io/gh/OCA-contributors/contributors-module/branch/18.0/graph/badge.svg)](https://codecov.io/gh/OCA-contributors/contributors-module)
-<!-- /!\ Non OCA Context : Set here the badge of your translation instance. -->
+# Version Control Platform configuration
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.odoo-community.org/builds?repo=OCA/version-control-platform&target_branch=18.0)
+[![Pre-commit Status](https://github.com/OCA/version-control-platform/actions/workflows/pre-commit.yml/badge.svg?branch=18.0)](https://github.com/OCA/version-control-platform/actions/workflows/pre-commit.yml?query=branch%3A18.0)
+[![Build Status](https://github.com/OCA/version-control-platform/actions/workflows/test.yml/badge.svg?branch=18.0)](https://github.com/OCA/version-control-platform/actions/workflows/test.yml?query=branch%3A18.0)
+[![codecov](https://codecov.io/gh/OCA/version-control-platform/branch/18.0/graph/badge.svg)](https://codecov.io/gh/OCA/version-control-platform)
+[![Translation Status](https://translation.odoo-community.org/widgets/version-control-platform-18-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/version-control-platform-18-0/?utm_source=widget)
 
 <!-- /!\ do not modify above this line -->
 
-# Modules for contributors
-
-
+Version Control Platform allows to import Git information and other kind of contributions in your odoo system
 
 <!-- /!\ do not modify below this line -->
 
@@ -32,4 +32,6 @@ policy. Consult each module's `__manifest__.py` file, which contains a `license`
 that explains its license.
 
 ----
-<!-- /!\ Non OCA Context : Set here the full description of your organization. -->
+OCA, or the [Odoo Community Association](http://odoo-community.org/), is a nonprofit
+organization whose mission is to support the collaborative development of Odoo features
+and promote its widespread use.
