@@ -206,7 +206,7 @@ class ContributorsOrganization(models.Model):
         if actions is None:
             actions = self._translation_actions()
         domain = [
-            ("organization_id", "=", self.ids),
+            ("organization_id", "in", self.ids),
             ("date", ">=", start),
             ("date", "<", end),
             ("action", "in", actions),
