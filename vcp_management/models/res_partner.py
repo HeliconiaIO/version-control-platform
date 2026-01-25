@@ -24,14 +24,22 @@ class ResPartner(models.Model):
     vcp_reviews = fields.Integer(
         compute="_compute_vcp_contributions", string="Reviews", prefetch=False
     )
+    vcp_user_ids = fields.One2many(
+        "vcp.user",
+        inverse_name="partner_id",
+    )
+    vcp_organization_ids = fields.One2many(
+        "vcp.organization",
+        inverse_name="partner_id",
+    )
 
     @api.depends()
     def _compute_vcp_contributions(self):
-        self.filtered(lambda p: p.github_user)._compute_vcp_contributions_field(
+        self.filtered(lambda p: p.vcp_user_ids)._compute_vcp_contributions_field(
             "partner_id"
         )
-        self.filtered(lambda p: not p.github_user)._compute_vcp_contributions_field(
-            "organization_id"
+        self.filtered(lambda p: not p.vcp_user_ids)._compute_vcp_contributions_field(
+            "partner_organization_id"
         )
 
     @api.model
@@ -50,7 +58,11 @@ class ResPartner(models.Model):
             self.env["vcp.platform"]
             .search([])
             ._generate_data(
-                start=start, end=end, field=field, kind="user", extra_domain=[]
+                start=start,
+                end=end,
+                field=field,
+                kind="user",
+                extra_domain=[(field, "in", self.ids)],
             )
         )
         field_map = self._get_contributors_field_map()
@@ -58,11 +70,3 @@ class ResPartner(models.Model):
             partner.update(
                 {key: data[partner.id].get(field_map[key], 0) for key in field_map}
             )
-
-    def _get_contributor_url(self):
-        if self.is_published and self.website_url:
-            return self.website_url
-        return False
-
-    def _get_contributors_name(self, kind, **kwargs):
-        return self.name

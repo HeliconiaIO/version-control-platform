@@ -5,15 +5,23 @@ from odoo import fields, models, tools
 
 
 class VcpRequest(models.Model):
+    """
+    Request of changes on a repository, e.g. pull request on GitHub
+    or merge request on GitLab.
+    """
+
     _name = "vcp.request"
     _description = "Code Request"
 
     external_id = fields.Char(string="Externa ID", readonly=True, index=True)
     name = fields.Char(readonly=True)
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
+    user_id = fields.Many2one(
+        comodel_name="vcp.user",
         string="Contributor",
         readonly=True,
+    )
+    partner_id = fields.Many2one(
+        related="user_id.partner_id",
     )
     repository_id = fields.Many2one(
         comodel_name="vcp.repository",
@@ -26,8 +34,12 @@ class VcpRequest(models.Model):
         ondelete="restrict",
     )
     organization_id = fields.Many2one(
-        comodel_name="res.partner",
+        comodel_name="vcp.organization",
         readonly=True,
+    )
+    partner_organization_id = fields.Many2one(
+        related="organization_id.partner_id",
+        string="Organization Partner",
     )
     url = fields.Char(readonly=True)
     state = fields.Char(readonly=True)

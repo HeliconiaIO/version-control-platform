@@ -20,4 +20,22 @@
         <field name="interval_type">days</field>
         <field name="active">False</field>
     </record>
+    <record model="ir.cron" id="cron_repository_branch_update">
+        <field name="name">VCP: Branch Update</field>
+        <field name="model_id" ref="model_vcp_repository" />
+        <field name="state">code</field>
+        <field name="code">model._cron_update_branches()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">False</field>
+    </record>
+    <record model="ir.cron" id="cron_repository_branch_rule_process">
+        <field name="name">VCP: Branch Rule Process</field>
+        <field name="model_id" ref="model_vcp_repository_branch" />
+        <field name="state">code</field>
+        <field name="code">model._cron_process_branch_rules()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">False</field>
+    </record>
 </odoo>

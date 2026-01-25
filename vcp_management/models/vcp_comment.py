@@ -10,14 +10,22 @@ class VcpComment(models.Model):
 
     external_id = fields.Char(readonly=True, required=True, index=True)
     body = fields.Html(readonly=True)
+    user_id = fields.Many2one(
+        comodel_name="vcp.user",
+        readonly=True,
+    )
     partner_id = fields.Many2one(
-        comodel_name="res.partner",
+        related="user_id.partner_id",
         readonly=True,
     )
     organization_id = fields.Many2one(
         related="request_id.organization_id",
         readonly=True,
         store=True,
+    )
+    partner_organization_id = fields.Many2one(
+        related="request_id.organization_id.partner_id",
+        string="Organization Partner",
     )
     repository_id = fields.Many2one(
         related="request_id.repository_id",
