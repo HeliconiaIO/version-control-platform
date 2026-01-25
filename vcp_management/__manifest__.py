@@ -2,14 +2,15 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
-    "name": "Vcp",
-    "summary": """Virtual Control Platform core module""",
+    "name": "VCP Management",
+    "summary": """Management for your Virtual Control Platforms""",
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Dixmit,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/version-control-platform",
-    "depends": ["website_partner"],
+    "depends": ["base"],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
         "templates/templates.xml",
@@ -20,16 +21,16 @@
         "views/vcp_repository.xml",
         "views/vcp_branch.xml",
         "views/vcp_platform.xml",
+        "views/vcp_organization.xml",
+        "views/vcp_user.xml",
+        "views/vcp_host.xml",
+        "views/vcp_rule.xml",
     ],
     "demo": [],
-    "assets": {
-        "web.assets_frontend": [
-            "vcp/static/src/components/**/*.esm.js",
-            "vcp/static/src/components/**/*.xml",
-            "vcp/static/src/components/**/*.scss",
-        ],
-        "web.assets_tests": [
-            "vcp/static/tests/**/*",
-        ],
+    "external_dependencies": {
+        "python": ["GitPython", "pathspec"],
+        "bin": ["cloc"],
+        # special definition used by OCA to install packages
+        "deb": ["cloc"],
     },
 }

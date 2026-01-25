@@ -8,4 +8,10 @@
         sequence="16"
         web_icon="vcp,static/description/icon.png"
     />
+    <menuitem
+        id="vcp_settings_menu"
+        name="Settings"
+        parent="vcp_main_menu"
+        sequence="80"
+    />
 </odoo>

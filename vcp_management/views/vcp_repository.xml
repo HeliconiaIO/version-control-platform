@@ -19,6 +19,12 @@
                         string="Force Update Information (1Y)"
                         class="oe_highlight"
                     />
+                    <button
+                        name="update_branches"
+                        type="object"
+                        string="Update Branches"
+                        class="oe_highlight"
+                    />
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
@@ -55,8 +61,34 @@
                     <group>
                         <field name="name" />
                         <field name="description" />
+                        <field name="platform_id" />
+                        <field name="information_update" />
+                        <field name="branch_update" />
+                        <field name="rule_ids" widget="many2many_tags" />
+                        <field name="override_parent_rules" />
                         <field name="from_date" />
+                        <field name="branch_update_date" />
                     </group>
+                    <notebook>
+                        <page string="Branches" name="branches">
+                            <field name="branch_ids">
+                                <list>
+                                    <field
+                                        name="branch_id"
+                                        domain="[('platform_id', '=', platform_id)]"
+                                    />
+                                    <field name="platform_id" column_invisible="1" />
+                                    <field name="last_commit" />
+                                    <button
+                                        name="process_rules"
+                                        type="object"
+                                        string="Process Rules"
+                                        class="oe_highlight"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -78,9 +110,61 @@
             <list default_order="from_date asc">
                 <field name="name" />
                 <field name="description" />
+                <field name="platform_id" />
                 <field name="from_date" />
                 <field name="fork_count" />
             </list>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="vcp_repository_branch_form_view">
+        <field name="model">vcp.repository.branch</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="repository_id" />
+                        <field
+                            name="branch_id"
+                            domain="[('platform_id', '=', platform_id)]"
+                        />
+                        <field name="rule_ids" widget="many2many_tags" />
+                        <field name="override_parent_rules" />
+                        <field name="platform_id" invisible="1" />
+                        <field name="last_commit" />
+                    </group>
+                    <notebook>
+                        <page string="Information" name="information">
+                            <field name="rule_information_ids">
+                                <list create="0">
+                                    <field name="rule_id" />
+                                    <field name="code_count" />
+                                    <field name="documentation_count" />
+                                    <field name="empty_count" />
+                                    <field name="total_count" />
+                                    <field name="scanned_files" />
+                                </list>
+                                <form create="0" edit="0" delete="0">
+                                    <sheet>
+                                        <group>
+                                            <field
+                                                name="repository_branch_id"
+                                                invisible="1"
+                                            />
+                                            <field name="rule_id" />
+                                            <field name="code_count" />
+                                            <field name="documentation_count" />
+                                            <field name="empty_count" />
+                                            <field name="total_count" />
+                                            <field name="scanned_files" />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
         </field>
     </record>
 

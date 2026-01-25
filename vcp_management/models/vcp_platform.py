@@ -1,20 +1,21 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
+import os
 from collections import defaultdict
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import fields, models, tools
+from odoo import _, api, fields, models, tools
 
 _logger = logging.getLogger(__name__)
 
 
-class VCPPlatform(models.Model):
+class VcpPlatform(models.Model):
     """
     This model should define how to interact with a Version Control Platform
-    (VCP) such as GitHub, GitLab, etc.
+    (VCP) such as GitHub, GitLab, etc._get_git_url
     1 platform should correspond to 1 organization/account on the VCP.
     """
 
@@ -42,7 +43,11 @@ class VCPPlatform(models.Model):
     image_64 = fields.Image(
         max_width=64, max_height=64, store=True, related="image_1920", string="Image 64"
     )
-    kind = fields.Selection([], required=True)
+    host_id = fields.Many2one(
+        "vcp.host",
+        required=True,
+    )
+    kind = fields.Char(related="host_id.type_id.code")
     key_ids = fields.One2many(
         comodel_name="vcp.platform.key",
         inverse_name="platform_id",
@@ -52,20 +57,44 @@ class VCPPlatform(models.Model):
         "vcp.repository",
         inverse_name="platform_id",
     )
+    default_update_repository_information = fields.Boolean()
+    information_update = fields.Boolean()
+    local_path = fields.Char(compute="_compute_local_path")
+    rule_ids = fields.Many2many(
+        "vcp.rule",
+        string="Processing Rules",
+    )
+
+    def _get_source_path(self):
+        return (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("vcp_management.source_code_local_path", "")
+            or tools.config.get("source_code_local_path", "")
+            or os.environ.get("SOURCE_CODE_LOCAL_PATH", "")
+        )
+
+    @api.depends()
+    def _compute_local_path(self):
+        source_path = self._get_source_path()
+        for record in self:
+            record.local_path = f"{source_path}/{record.id}"
 
     def update_information(self):
         self.ensure_one()
         getattr(self, f"_update_information_{self.kind}")()
         self.last_update = fields.Datetime.now()
 
+    def _get_git_url(self, repository):
+        return getattr(self, f"_get_git_url_{self.kind}")(repository)
+
     def _cron_update_platforms(self):
-        for organization in self.search([]):
+        for platform in self.search([("information_update", "=", True)]):
             try:
-                organization.update_information()
+                platform.update_information()
             except Exception as e:
-                _logger.error(
-                    "Error updating organization %s: %s", organization.name, str(e)
-                )
+                _logger.error("Error updating platform %s: %s", platform.name, str(e))
+                raise e
 
     @tools.ormcache("self.id", "name")
     def _get_branch(self, name):
@@ -119,7 +148,6 @@ class VCPPlatform(models.Model):
     def _get_default_data(self, start, end, field, kind, **values):
         return {
             "name": "",
-            "github_name": "",
             "created_requests": 0,
             "merged_requests": 0,
             "comments": 0,
@@ -153,15 +181,13 @@ class VCPPlatform(models.Model):
                 self._get_created_domain(start, end, **values)
                 + extra_domain
                 + [(field, "!=", False)],
-                [field, "partner_id:count_distinct"]
-                if field != "partner_id"
-                else [field],
+                [field, "user_id:count_distinct"] if field != "user_id" else [field],
                 [field],
             )
         ):
             data[pr[field][0]]["created_requests"] = pr[f"{field}_count"]
-            if field != "partner_id":
-                data[pr[field][0]]["developers"] = pr["partner_id"]
+            if field != "user_id":
+                data[pr[field][0]]["developers"] = pr["user_id"]
         for comment in (
             self.env["vcp.comment"]
             .sudo()
@@ -200,6 +226,132 @@ class VCPPlatform(models.Model):
         else:
             start = datetime(year, month, 1, 0, 0, 0)
         return start, end
+
+    def _get_vcp_columns(self, kind):
+        """
+        Returns the columns to display in the VCP contributors view in Portal
+        We keep it here to avoid glue modules having to override models just to
+        add columns.
+        """
+        if kind == "contributors":
+            return [
+                {"field": "name", "title": _("Name"), "kind": "name"},
+                {
+                    "field": "created_requests",
+                    "title": _("Created Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_requests",
+                    "title": _("Merged Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        elif kind == "organizations":
+            return [
+                {"field": "name", "title": _("Organization Name"), "kind": "name"},
+                {
+                    "field": "created_requests",
+                    "title": _("Created Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_requests",
+                    "title": _("Merged Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "developers",
+                    "title": _("Developers"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        elif kind == "repositories":
+            return [
+                {"field": "name", "title": _("Repository Name"), "kind": "name"},
+                {
+                    "field": "created_requests",
+                    "title": _("Created Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "merged_requests",
+                    "title": _("Merged Requests"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "comments",
+                    "title": _("Comments"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "reviews",
+                    "title": _("Reviews"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+                {
+                    "field": "developers",
+                    "title": _("Developers"),
+                    "kind": "float",
+                    "decimals": 0,
+                },
+            ]
+        return []
+
+    def _improve_vcp_data(self, data, kind, **kwargs):
+        """
+        This method improves the raw data generated by _generate_data by adding
+        names and URLs for each key (contributor, organization, repository).
+        It is kept here to avoid glue modules having to override models just to
+        add extra information
+        """
+        for key, values in data.items():
+            if kind == "contributors":
+                partner = self.env["vcp.user"].browse(key)
+                values["name"] = partner._get_contributors_name(kind, **kwargs)
+                values["url"] = partner._get_contributor_url()
+            elif kind == "organizations":
+                organization = self.env["vcp.organization"].browse(key)
+                values["name"] = organization._get_contributors_name(kind, **kwargs)
+                values["url"] = organization._get_contributor_url()
+            elif kind == "repositories":
+                repository = self.env["vcp.repository"].browse(key)
+                values["name"] = repository.name
+                values["url"] = repository._get_repository_url()
+        return data
 
 
 class VcpPlatformKey(models.Model):

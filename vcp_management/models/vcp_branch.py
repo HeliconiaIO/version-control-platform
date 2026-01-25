@@ -5,6 +5,10 @@ from odoo import fields, models
 
 
 class VcpBranch(models.Model):
+    """
+    Branches of code on our repository
+    """
+
     _name = "vcp.branch"
     _description = "Branch"
 
