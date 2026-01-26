@@ -16,6 +16,37 @@ _logger = logging.getLogger(__name__)
 class VcpRepository(models.Model):
     _inherit = "vcp.repository"
 
+    def _update_branches_github(self):
+        self.ensure_one()
+        client = self.platform_id._get_github_clients()[0]
+        try:
+            repo = client.repository(self.platform_id.name, self.name)
+            original_branches = self.branch_ids
+            existing_branches = {b.branch_id.name: b for b in self.branch_ids}
+            found_branches = self.env["vcp.repository.branch"]
+            for branch in repo.branches():
+                if branch.name in existing_branches:
+                    existing_branches[branch.name].sudo().write(
+                        {"last_commit": branch.commit.sha}
+                    )
+                    found_branches |= existing_branches[branch.name]
+                else:
+                    self.env["vcp.repository.branch"].sudo().create(
+                        {
+                            "repository_id": self.id,
+                            "branch_id": self.platform_id._get_branch(branch.name),
+                            "last_commit": branch.commit.sha,
+                        }
+                    )
+            (original_branches - found_branches).sudo().unlink()
+        except github3.exceptions.ForbiddenError as e:
+            _logger.error(e)
+            rate = client.rate_limit()
+            reset = fields.Datetime.to_string(
+                datetime.utcfromtimestamp(rate["resources"]["core"]["reset"])
+            )
+            raise ValidationError(self.env._(f"Reset on {reset}")) from e
+
     def _parse_github_pr(self, pr, client):
         origin_data = pr.as_dict()
         comments_url = pr.comments_url
@@ -35,11 +66,11 @@ class VcpRepository(models.Model):
         return (
             str(pr.id),
             {
-                "partner_id": self.env["res.partner"]._get_github_user(pr.user, client),
+                "user_id": self.platform_id.host_id._get_user(pr.user.login),
                 "repository_id": self.id,
                 "branch_id": self.platform_id._get_branch(pr.base.ref),
-                "organization_id": self.env["res.partner"]._get_github_organization(
-                    pr.head.repo[0], client
+                "organization_id": self.platform_id.host_id._get_organization(
+                    pr.head.repo[0]
                 ),
                 "url": pr.html_url,
                 "state": pr.state,
@@ -72,10 +103,8 @@ class VcpRepository(models.Model):
             [
                 {
                     "id": str(c["id"]),
-                    "partner_id": c.get("user")
-                    and self.env["res.partner"]._get_github_user(
-                        c["user"].get("login"), client
-                    ),
+                    "user_id": c.get("user")
+                    and self.platform_id.host_id._get_user(c["user"].get("login")),
                     "body": c["body"],
                     "created_at": self.platform_id._parse_github_date(c["created_at"]),
                     "updated_at": self.platform_id._parse_github_date(c["updated_at"]),
@@ -85,10 +114,8 @@ class VcpRepository(models.Model):
             [
                 {
                     "id": str(r["id"]),
-                    "partner_id": r.get("user")
-                    and self.env["res.partner"]._get_github_user(
-                        r["user"].get("login"), client
-                    ),
+                    "user_id": r.get("user")
+                    and self.platform_id.host_id._get_user(r["user"].get("login")),
                     "body": r["body"],
                     "submitted_at": self.platform_id._parse_github_date(
                         r.get("submitted_at")

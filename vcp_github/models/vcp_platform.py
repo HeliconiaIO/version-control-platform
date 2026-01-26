@@ -15,10 +15,8 @@ from odoo.exceptions import ValidationError
 class VcpPlatform(models.Model):
     _inherit = "vcp.platform"
 
-    kind = fields.Selection(
-        selection_add=[("github", "GitHub")],
-        ondelete={"github": "cascade"},
-    )
+    def _get_git_url_github(self, repository):
+        return f"https://github.com/{self.name}/{repository.name}"
 
     def _get_github_clients(self):
         git = []
