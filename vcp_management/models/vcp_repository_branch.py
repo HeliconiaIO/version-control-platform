@@ -78,7 +78,16 @@ class VcpRepositoryBranch(models.Model):
     def _download_code(self):
         self.ensure_one()
         local_path = self.local_path
-        os.makedirs(local_path, exist_ok=True)
+        try:
+            os.makedirs(local_path, exist_ok=True)
+        except PermissionError as err:
+            raise ValidationError(
+                _(
+                    "Unable to create a folder in '%(local_path)s'.",
+                    local_path=local_path,
+                )
+            ) from err
+
         try:
             repo = git.Repo(local_path)
             for remote in repo.remotes:
