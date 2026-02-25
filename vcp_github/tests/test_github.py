@@ -19,8 +19,8 @@ class TestGithub(TransactionCase):
                 "key_ids": [
                     Command.create({"name": "ghp_exampletoken1234567890abcdef"})
                 ],
-                "default_update_repository_information": True,
-                "information_update": True,
+                "default_repository_scheduled_information_update": True,
+                "scheduled_information_update": True,
             }
         )
 
@@ -60,10 +60,16 @@ class TestGithub(TransactionCase):
             mock_org.avatar_url = False
             mock_repo1 = MagicMock()
             mock_repo1.name = "server-tools"
+            mock_repo1.archived = False
+            mock_repo1.fork = False
             mock_repo1.created_at = "2020-01-01T00:00:00Z"
+            mock_repo1.pushed_at = "2020-02-01T00:00:00Z"
             mock_repo2 = MagicMock()
             mock_repo2.name = "server-brand"
+            mock_repo2.archived = False
+            mock_repo2.fork = False
             mock_repo2.created_at = "2021-01-01T10:00:00Z"
+            mock_repo2.pushed_at = "2021-02-01T00:00:00Z"
             mock_org.repositories.return_value = [mock_repo1, mock_repo2]
             mock_client.organization.return_value = mock_org
             mock_github3.login.return_value = mock_client
@@ -102,6 +108,7 @@ class TestGithub(TransactionCase):
                     "created_at": "2023-01-01T00:00:00Z",
                     "updated_at": "2023-01-03T00:00:00Z",
                     "closed_at": "2023-01-02T00:00:00Z",
+                    "pushed_at": "2024-01-02T00:00:00Z",
                     "commits": 3,
                     "comments": 2,
                     "review_comments": 1,
