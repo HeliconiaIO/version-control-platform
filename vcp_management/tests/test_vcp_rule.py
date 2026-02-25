@@ -132,6 +132,7 @@ print('Bye bye world')
             self.repository_branch.process_rules()
             mock_git_url.assert_called_once()
             mock_clone_from.assert_called_once()
+        self.repository_branch.invalidate_recordset()
         self.assertTrue(self.repository_branch.rule_information_ids)
         rule_info = self.repository_branch.rule_information_ids.filtered(
             lambda x: x.rule_id == self.rule
@@ -171,6 +172,7 @@ print('Bye bye world')
             self.repository_branch.process_rules()
             mock_git_url.assert_called_once()
             mock_git_repo.assert_called_once()
+        self.repository_branch.invalidate_recordset()
         self.assertTrue(self.repository_branch.rule_information_ids)
         rule_info = self.repository_branch.rule_information_ids.filtered(
             lambda x: x.rule_id == self.rule
