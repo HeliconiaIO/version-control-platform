@@ -1,6 +1,7 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
+import re
 from datetime import datetime, timedelta
 
 import github3
@@ -25,6 +26,13 @@ class VcpRepository(models.Model):
             existing_branches = {b.branch_id.name: b for b in self.branch_ids}
             found_branches = self.env["vcp.repository.branch"]
             for branch in repo.branches():
+                branch_pattern = (
+                    self.fetch_branch_pattern
+                    or self.platform_id.fetch_repository_branch_pattern
+                    or False
+                )
+                if branch_pattern and not re.match(branch_pattern, branch.name):
+                    continue
                 if branch.name in existing_branches:
                     existing_branches[branch.name].sudo().write(
                         {"last_commit": branch.commit.sha}
@@ -48,6 +56,7 @@ class VcpRepository(models.Model):
             raise ValidationError(self.env._(f"Reset on {reset}")) from e
 
     def _parse_github_pr(self, pr, client):
+        self.ensure_one()
         origin_data = pr.as_dict()
         comments_url = pr.comments_url
         comments_req = client.session.get(comments_url)
@@ -63,12 +72,22 @@ class VcpRepository(models.Model):
             reviews_url = reviews_req.links["next"]["url"]
             reviews_req = client.session.get(reviews_url)
             reviews += reviews_req.json()
+
+        branch_pattern = (
+            self.fetch_branch_pattern
+            or self.platform_id.fetch_repository_branch_pattern
+            or False
+        )
+        if branch_pattern and not re.match(branch_pattern, pr.base.ref):
+            branch_id = False
+        else:
+            branch_id = self.platform_id._get_branch(pr.base.ref)
         return (
             str(pr.id),
             {
                 "user_id": self.platform_id.host_id._get_user(pr.user.login),
                 "repository_id": self.id,
-                "branch_id": self.platform_id._get_branch(pr.base.ref),
+                "branch_id": branch_id,
                 "organization_id": self.platform_id.host_id._get_organization(
                     pr.head.repo[0]
                 ),
@@ -77,6 +96,7 @@ class VcpRepository(models.Model):
                 "name": pr.title,
                 "is_merged": any(label["name"] == "merged 🎉" for label in pr.labels)
                 or pr.is_merged(),
+                "is_draft": pr.draft,
                 "created_at": self.platform_id._parse_github_date(
                     origin_data["created_at"]
                 ),
@@ -105,7 +125,7 @@ class VcpRepository(models.Model):
                     "id": str(c["id"]),
                     "user_id": c.get("user")
                     and self.platform_id.host_id._get_user(c["user"].get("login")),
-                    "body": c["body"],
+                    "body": self.platform_id._parse_github_markdown(c["body"]),
                     "created_at": self.platform_id._parse_github_date(c["created_at"]),
                     "updated_at": self.platform_id._parse_github_date(c["updated_at"]),
                 }
@@ -116,7 +136,7 @@ class VcpRepository(models.Model):
                     "id": str(r["id"]),
                     "user_id": r.get("user")
                     and self.platform_id.host_id._get_user(r["user"].get("login")),
-                    "body": r["body"],
+                    "body": self.platform_id._parse_github_markdown(r["body"]),
                     "submitted_at": self.platform_id._parse_github_date(
                         r.get("submitted_at")
                     ),
