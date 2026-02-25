@@ -25,6 +25,7 @@
         "views/vcp_user.xml",
         "views/vcp_host.xml",
         "views/vcp_rule.xml",
+        "views/vcp_rule_information.xml",
     ],
     "demo": [],
     "external_dependencies": {

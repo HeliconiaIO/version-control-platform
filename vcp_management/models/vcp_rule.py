@@ -32,39 +32,40 @@ class VcpRule(models.Model):
         default="cloc",
     )
 
-    def _process_rule(self, repository_branch):
+    def _process_rule(self, record):
         """
         Process the rule on the given repository and branch.
         It will call the corresponding method based on the rule type.
         """
-        return getattr(self, f"_process_rule_{self.rule_type}")(repository_branch)
+        return getattr(self, f"_process_rule_{self.rule_type}")(record)
 
-    def _process_rule_cloc(self, repository_branch):
+    def _process_rule_cloc(self, record):
         """
         Process the rule as a cloc analysis.
         """
-        repository_branch._download_code()
-        cloc_response = self._call_cloc_command(repository_branch.local_path)
-        matches = self._cloc_get_matches(repository_branch.local_path)
+        record._download_code()
+        cloc_response = self._call_cloc_command(record.local_path)
+        matches = self._cloc_get_matches(record.local_path)
         cloc_data = self._action_analysis_process_cloc(
-            repository_branch.local_path, matches, cloc_response
+            record.local_path, matches, cloc_response
         )
-        vals = self._prepare_analysis_rule_info_vals(repository_branch, cloc_data)
+        vals = self._prepare_analysis_rule_info_vals(record, cloc_data)
         if vals["scanned_files"] == 0:
             return False
-        analysis_rule_item = repository_branch.rule_information_ids.filtered(
+        analysis_rule_item = record.rule_information_ids.filtered(
             lambda x: x.rule_id == self
         )
         if analysis_rule_item:
             analysis_rule_item.write(vals)
         else:
-            repository_branch.rule_information_ids = [Command.create(vals)]
+            record.rule_information_ids = [Command.create(vals)]
 
-    def _prepare_analysis_rule_info_vals(self, repository_branch, cloc_data):
+    def _prepare_analysis_rule_info_vals(self, record, cloc_data):
         """Prepare analysis information values of a rule."""
         return {
             "rule_id": self.id,
-            "repository_branch_id": repository_branch.id,
+            "res_id": record.id,
+            "res_model": record._name,
             "code_count": cloc_data["code"],
             "documentation_count": cloc_data["documentation"],
             "empty_count": cloc_data["empty"],

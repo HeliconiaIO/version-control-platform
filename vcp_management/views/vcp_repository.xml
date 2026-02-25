@@ -135,32 +135,7 @@
                     </group>
                     <notebook>
                         <page string="Information" name="information">
-                            <field name="rule_information_ids">
-                                <list create="0">
-                                    <field name="rule_id" />
-                                    <field name="code_count" />
-                                    <field name="documentation_count" />
-                                    <field name="empty_count" />
-                                    <field name="total_count" />
-                                    <field name="scanned_files" />
-                                </list>
-                                <form create="0" edit="0" delete="0">
-                                    <sheet>
-                                        <group>
-                                            <field
-                                                name="repository_branch_id"
-                                                invisible="1"
-                                            />
-                                            <field name="rule_id" />
-                                            <field name="code_count" />
-                                            <field name="documentation_count" />
-                                            <field name="empty_count" />
-                                            <field name="total_count" />
-                                            <field name="scanned_files" />
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
+                            <field name="rule_information_ids" />
                         </page>
                     </notebook>
                 </sheet>
