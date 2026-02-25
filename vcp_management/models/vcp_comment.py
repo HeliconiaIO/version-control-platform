@@ -38,6 +38,8 @@ class VcpComment(models.Model):
         comodel_name="vcp.request",
         string="Request",
         readonly=True,
+        required=True,
+        ondelete="cascade",
     )
     _sql_constraints = [
         ("external_id_uniq", "unique(external_id)", "External ID must be unique.")

@@ -29,6 +29,8 @@ class VcpReview(models.Model):
     request_id = fields.Many2one(
         "vcp.request",
         readonly=True,
+        required=True,
+        ondelete="cascade",
     )
     organization_id = fields.Many2one(
         related="request_id.organization_id",

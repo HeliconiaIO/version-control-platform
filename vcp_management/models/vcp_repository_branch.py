@@ -18,10 +18,14 @@ class VcpRepositoryBranch(models.Model):
         "vcp.branch",
         string="Branch",
         required=True,
+        readonly=True,
+        ondelete="cascade",
     )
     repository_id = fields.Many2one(
         "vcp.repository",
         required=True,
+        readonly=True,
+        ondelete="cascade",
     )
     platform_id = fields.Many2one(
         related="repository_id.platform_id",
@@ -38,7 +42,7 @@ class VcpRepositoryBranch(models.Model):
         required=True,
     )
 
-    def _cron_process_branch_rules(self, limit=10):
+    def _cron_process_branch_rules(self, limit):
         branches = self.search([], limit=limit, order="update_rule_processing_date asc")
         for branch in branches:
             branch.process_rules()
@@ -96,3 +100,10 @@ class VcpRepositoryBranch(models.Model):
                 depth=1,
             )
         return result
+
+    def _compute_display_name(self):
+        if not self._context.get("display_only_branch_name"):
+            return super()._compute_display_name()
+
+        for record in self:
+            record.display_name = record.branch_id.name

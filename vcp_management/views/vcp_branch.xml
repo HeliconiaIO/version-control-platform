@@ -9,7 +9,8 @@
                 <header />
                 <sheet>
                     <group>
-                        <field name="name" />
+                        <field name="name" readonly="True" />
+                        <field name="platform_id" />
                     </group>
                 </sheet>
             </form>
@@ -21,7 +22,17 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name" />
+                <field name="platform_id" />
             </list>
         </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="vcp_branch_act_window">
+        <field name="name">Branches</field>
+        <field name="res_model">vcp.branch</field>
+        <field name="path">vcp-branch</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
     </record>
 </odoo>

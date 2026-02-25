@@ -17,6 +17,7 @@ class VcpBranch(models.Model):
         comodel_name="vcp.platform",
         string="Platform",
         required=True,
+        readonly=True,
     )
     _sql_constraints = [
         ("name_uniq", "unique(name, platform_id)", "Branch name must be unique.")

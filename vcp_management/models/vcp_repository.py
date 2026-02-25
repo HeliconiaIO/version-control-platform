@@ -19,20 +19,38 @@ class VcpRepository(models.Model):
         required=True,
     )
     created_at = fields.Datetime(readonly=True)
+    last_commit_date = fields.Datetime(readonly=True)
+    fetch_branch_pattern = fields.Char(
+        help="Regular Expression. If set, only branches whose names are matching"
+        " the pattern will be fetched. You can define that value at platform level."
+    )
     stargazers_count = fields.Integer(readonly=True)
+    is_fork = fields.Boolean(
+        readonly=True,
+        help="Specify if the repo is a Source or a Fork repository",
+    )
     fork_count = fields.Integer(readonly=True)
     watchers_count = fields.Integer(readonly=True)
     from_date = fields.Datetime(readonly=True, required=True)
     request_ids = fields.One2many("vcp.request", inverse_name="repository_id")
     request_count = fields.Integer(compute="_compute_request_count")
     test_field = fields.Char()  # TODO remove after testing
-    active = fields.Boolean(default=True)
-    information_update = fields.Boolean(
-        compute="_compute_information_update",
+    active = fields.Boolean(default=True, readonly=True)
+    scheduled_information_update = fields.Boolean(
+        compute="_compute_scheduled_information_update",
         store=True,
         readonly=False,
+        help="If checked, the cron that update repository informations"
+        " will look for up to date information, for this repository."
+        " This update include the recovery of requests, comments and reviews.",
     )
-    branch_update = fields.Boolean(default=False)
+    scheduled_branch_update = fields.Boolean(
+        compute="_compute_scheduled_branch_update",
+        store=True,
+        readonly=False,
+        help="If checked, the cron that update repository branches"
+        " will look for up to date branches, for this repository.",
+    )
     branch_update_date = fields.Datetime(
         readonly=True, required=True, default=fields.Datetime.now
     )
@@ -46,6 +64,7 @@ class VcpRepository(models.Model):
         "vcp.repository.branch",
         inverse_name="repository_id",
     )
+    branch_count = fields.Integer(compute="_compute_branch_count", store=True)
 
     def _get_rules(self):
         rules = self.rule_ids
@@ -63,16 +82,28 @@ class VcpRepository(models.Model):
         return self.platform_id._get_git_url(self)
 
     @api.depends("platform_id")
-    def _compute_information_update(self):
+    def _compute_scheduled_information_update(self):
         for record in self:
-            record.information_update = (
-                record.platform_id.default_update_repository_information
+            record.scheduled_information_update = (
+                record.platform_id.default_repository_scheduled_information_update
+            )
+
+    @api.depends("platform_id")
+    def _compute_scheduled_branch_update(self):
+        for record in self:
+            record.scheduled_branch_update = (
+                record.platform_id.default_repository_scheduled_branch_update
             )
 
     @api.depends("request_ids")
     def _compute_request_count(self):
         for record in self:
             record.request_count = len(record.request_ids)
+
+    @api.depends("branch_ids")
+    def _compute_branch_count(self):
+        for record in self:
+            record.branch_count = len(record.branch_ids)
 
     def update_branches(self):
         self.ensure_one()
@@ -89,16 +120,20 @@ class VcpRepository(models.Model):
             update_interval_days=update_interval_days
         )
 
-    def _cron_update_repositories(self, limit=1):
+    def _cron_update_repositories(self, limit):
         repositories = self.search(
-            [("information_update", "=", True)], limit=limit, order="from_date ASC"
+            [("scheduled_information_update", "=", True)],
+            limit=limit,
+            order="from_date ASC",
         )
         for repository in repositories:
             repository.update_information()
 
-    def _cron_update_branches(self, limit=1):
+    def _cron_update_branches(self, limit):
         repositories = self.search(
-            [("branch_update", "=", True)], limit=limit, order="branch_update_date ASC"
+            [("scheduled_branch_update", "=", True)],
+            limit=limit,
+            order="branch_update_date ASC",
         )
         for repository in repositories:
             repository.update_branches()

@@ -20,6 +20,7 @@ class VcpPlatform(models.Model):
     """
 
     _name = "vcp.platform"
+    _inherit = ["image.mixin"]
     _description = "VCP Platform"
 
     name = fields.Char(required=True)
@@ -28,20 +29,9 @@ class VcpPlatform(models.Model):
     last_update = fields.Datetime(readonly=True)
     active = fields.Boolean(default=True)
     update_interval_days = fields.Integer(default=3)
-    image_1920 = fields.Image()
     branch_ids = fields.One2many(
         "vcp.branch",
         inverse_name="platform_id",
-    )
-    image_128 = fields.Image(
-        max_width=128,
-        max_height=128,
-        store=True,
-        related="image_1920",
-        string="Image 128",
-    )
-    image_64 = fields.Image(
-        max_width=64, max_height=64, store=True, related="image_1920", string="Image 64"
     )
     host_id = fields.Many2one(
         "vcp.host",
@@ -57,8 +47,33 @@ class VcpPlatform(models.Model):
         "vcp.repository",
         inverse_name="platform_id",
     )
-    default_update_repository_information = fields.Boolean()
-    information_update = fields.Boolean()
+    repository_count = fields.Integer(compute="_compute_repository_count", store=True)
+    default_repository_scheduled_information_update = fields.Boolean(
+        help="If checked, the cron that update repositories"
+        " will look for up to date information, for this repository.",
+    )
+    default_repository_scheduled_branch_update = fields.Boolean(
+        help="If checked, the cron that update repository branches"
+        " will look for up to date branches, for this repository.",
+    )
+    scheduled_information_update = fields.Boolean(
+        default=True,
+        help="If checked, the cron that update platform informations"
+        " will look for up to date information, for this platform.",
+    )
+    fetch_repository_fork = fields.Boolean(
+        help="If checked, all repositories will be fetched (sources and forks)."
+        " Otherwise, only sources repositories will be fetched"
+    )
+    fetch_repository_archived = fields.Boolean(
+        help="If checked, all repositories will be fetched (actives and archived)."
+        " Otherwise, only active repositories will be fetched"
+    )
+    fetch_repository_branch_pattern = fields.Char(
+        help="Regular Expression. If set, only branches whose names are matching"
+        " the pattern will be fetched, when fetching branches of the repositories"
+        " of the platform."
+    )
     local_path = fields.Char(compute="_compute_local_path")
     rule_ids = fields.Many2many(
         "vcp.rule",
@@ -80,6 +95,11 @@ class VcpPlatform(models.Model):
         for record in self:
             record.local_path = f"{source_path}/{record.id}"
 
+    @api.depends("repository_ids")
+    def _compute_repository_count(self):
+        for record in self:
+            record.repository_count = len(record.repository_ids)
+
     def update_information(self):
         self.ensure_one()
         getattr(self, f"_update_information_{self.kind}")()
@@ -89,7 +109,7 @@ class VcpPlatform(models.Model):
         return getattr(self, f"_get_git_url_{self.kind}")(repository)
 
     def _cron_update_platforms(self):
-        for platform in self.search([("information_update", "=", True)]):
+        for platform in self.search([("scheduled_information_update", "=", True)]):
             try:
                 platform.update_information()
             except Exception as e:
@@ -352,20 +372,3 @@ class VcpPlatform(models.Model):
                 values["name"] = repository.name
                 values["url"] = repository._get_repository_url()
         return data
-
-
-class VcpPlatformKey(models.Model):
-    _name = "vcp.platform.key"
-    _description = "VCP Platform API Key"  # TODO
-
-    platform_id = fields.Many2one(
-        comodel_name="vcp.platform",
-        string="Platform",
-        required=True,
-        ondelete="cascade",
-    )
-    name = fields.Char(required=True)
-
-    _sql_constraints = [
-        ("name_uniq", "unique(name, platform_id)", "API Key must be unique.")
-    ]
