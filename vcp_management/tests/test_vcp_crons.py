@@ -32,9 +32,11 @@ class TestVcpRules(TransactionCase):
             }
         )
         # disable updates to avoid unwanted side effects during tests
-        cls.env["vcp.platform"].search([]).write({"information_update": False})
+        cls.env["vcp.platform"].search([]).write(
+            {"scheduled_information_update": False}
+        )
         cls.env["vcp.repository"].search([]).write(
-            {"information_update": False, "branch_update": False}
+            {"scheduled_information_update": False, "scheduled_branch_update": False}
         )
         # be sure some expected values are set otherwise homepage may fail
         cls.platform = cls.env["vcp.platform"].create(
@@ -43,7 +45,7 @@ class TestVcpRules(TransactionCase):
                 "short_description": "OCA",
                 "description": "OCA",
                 "host_id": cls.host.id,
-                "information_update": True,
+                "scheduled_information_update": True,
             }
         )
 
@@ -53,7 +55,7 @@ class TestVcpRules(TransactionCase):
                 "name": "test_repo",
                 "description": "Test Repository",
                 "platform_id": self.platform.id,
-                "information_update": True,
+                "scheduled_information_update": True,
                 "from_date": Date.today(),
             }
         )
@@ -69,7 +71,7 @@ class TestVcpRules(TransactionCase):
                 "name": "test_repo",
                 "description": "Test Repository",
                 "platform_id": self.platform.id,
-                "branch_update": True,
+                "scheduled_branch_update": True,
                 "from_date": Date.today(),
             }
         )
@@ -77,7 +79,7 @@ class TestVcpRules(TransactionCase):
             self.assertRaises(AttributeError),
             mute_logger("odoo.addons.vcp_management.models.vcp_platform"),
         ):
-            self.env["vcp.repository"]._cron_update_branches()
+            self.env["vcp.repository"]._cron_update_branches(limit=1)
 
     def test_platform_update_no_definition(self):
         with (
@@ -95,8 +97,8 @@ class TestVcpRules(TransactionCase):
                     "name": "test_repo",
                     "description": "Test Repository",
                     "platform_id": oself.id,
-                    "information_update": True,
-                    "branch_update": True,
+                    "scheduled_information_update": True,
+                    "scheduled_branch_update": True,
                     "from_date": Date.today(),
                 }
             )
@@ -140,7 +142,7 @@ class TestVcpRules(TransactionCase):
             dummy_repository_update_information,
             create=True,
         ):
-            self.env["vcp.repository"]._cron_update_repositories()
+            self.env["vcp.repository"]._cron_update_repositories(limit=1)
         repository.invalidate_recordset()
         self.assertTrue(repository.request_ids)
         self.assertFalse(repository.branch_ids)
@@ -160,7 +162,7 @@ class TestVcpRules(TransactionCase):
             dummy_repository_update_branches,
             create=True,
         ):
-            self.env["vcp.repository"]._cron_update_branches()
+            self.env["vcp.repository"]._cron_update_branches(limit=1)
 
         self.assertTrue(repository.branch_ids)
         self.assertEqual(repository.branch_ids.branch_id.name, "main")
