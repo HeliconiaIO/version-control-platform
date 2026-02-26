@@ -41,7 +41,7 @@ class TestUi(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
         )
         platform = cls.env["vcp.platform"].create(
             {
-                "name": "oca",
+                "name": "oca-dev",
                 "short_description": "OCA",
                 "description": "OCA",
                 "host_id": cls.host.id,
@@ -50,7 +50,7 @@ class TestUi(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
         repository = cls.env["vcp.repository"].create(
             {
                 "name": "contributors-module",
-                "description": "OCA/contributors-module",
+                "description": "OCA-dev/contributors-module",
                 "platform_id": platform.id,
                 "from_date": date,
             }
