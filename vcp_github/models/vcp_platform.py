@@ -30,7 +30,12 @@ class VcpPlatform(models.Model):
         clients = self._get_github_clients()
         if not clients:
             raise ValidationError(
-                _("No github clients configured. Please enter at least an API Key.")
+                _(
+                    "No github clients configured. "
+                    "Please enter at least a Github Personal Access Token. "
+                    "You can check more information at "
+                    "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+                )
             )
         org = clients[0].organization(self.name)
         self.short_description = org.name

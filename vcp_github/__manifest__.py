@@ -3,13 +3,13 @@
 
 {
     "name": "Vcp Github",
-    "summary": """Integrate Virtual Control Platform with Github""",
+    "summary": """Integrate Version Control Platform with Github""",
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Dixmit,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/version-control-platform",
     "depends": [
-        "vcp_management",
+        "vcp_git",
     ],
     "external_dependencies": {
         "python": ["github3.py", "markdown"],
