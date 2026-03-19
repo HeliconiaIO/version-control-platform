@@ -28,134 +28,13 @@ Vcp Github
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-[ This file must be max 2-3 paragraphs, and is required.
-
-The goal of this document is to explain quickly the features of this
-module: “what” this module does and “what” it is for. ]
-
-Example:
-
-This module extends the functionality of ... to support ... and to allow
-users to ...
+This module facilitates the integration between Github and Version
+Control Platform.
 
 **Table of contents**
 
 .. contents::
    :local:
-
-Use Cases / Context
-===================
-
-[ This file is optional but strongly suggested to allow end-users to
-evaluate the module's usefulness in their context. ]
-
-BUSINESS NEED: It should explain the “why” of the module:
-
-- what is the business requirement that generated the need to develop
-  this module
-- in which context or use cases this module can be useful (practical
-  examples are welcome!).
-
-APPROACH: It could also explain the approach to address the mentioned
-need.
-
-USEFUL INFORMATION: It can also inform on related modules:
-
-- modules it depends on and their features
-- other modules that can work well together with this one
-- suggested setups where the module is useful (eg: multicompany,
-  multi-website)
-
-Installation
-============
-
-[ This file must only be present if there are very specific installation
-instructions, such as installing non-python dependencies. The audience
-is systems administrators. ]
-
-To install this module, you need to:
-
-1. Do this ...
-
-Configuration
-=============
-
-[ This file is not always required; it should explain **how to configure
-the module before using it**; it is aimed at users with administration
-privileges.
-
-Please be detailed on the path to configuration (eg: do you need to
-activate developer mode?), describe step by step configurations and the
-use of screenshots is strongly recommended.]
-
-To configure this module, you need to:
-
-- Go to *App* > Menu > Menu item
-- Activate boolean… > save
-- …
-
-Usage
-=====
-
-[ This file is required and contains the instructions on **“how”** to
-use the module for end-users.
-
-If the module does not have a visible impact on the user interface, just
-add the following sentence:
-
-   This module does not impact the user interface.
-
-If that’s not the case, please make sure that every usage step is
-covered and remember that images speak more than words!]
-
-To use this module, you need to:
-
-- Go to *App* > Menu > Menu item
-
-  *insert screenshot!*
-
-- In “Contact” form, add a value to field *xyz* > save
-
-  *insert screenshot!*
-
-- The value of *xyz* is now displayed in the list view.
-
-  *insert screenshot!*
-
-Known issues / Roadmap
-======================
-
-[ Enumerate known caveats and future potential improvements. It is
-mostly intended for end-users, and can also help potential new
-contributors discovering new features to implement. ]
-
-- ...
-
-Changelog
-=========
-
-[ The change log. The goal of this file is to help readers understand
-changes between version. The primary audience is end users and
-integrators. Purely technical changes such as code refactoring must not
-be mentioned here.
-
-This file may contain ONE level of section titles, underlined with the ~
-(tilde) character. Other section markers are forbidden and will likely
-break the structure of the README.rst or other documents where this
-fragment is included. ]
-
-11.0.x.y.z (YYYY-MM-DD)
------------------------
-
-- [BREAKING] Breaking changes come first.
-  (`#70 <https://github.com/OCA/repo/issues/70>`__)
-- [ADD] New feature. (`#74 <https://github.com/OCA/repo/issues/74>`__)
-- [FIX] Correct this. (`#71 <https://github.com/OCA/repo/issues/71>`__)
-
-11.0.x.y.z (YYYY-MM-DD)
------------------------
-
-- ...
 
 Bug Tracker
 ===========
@@ -178,20 +57,9 @@ Authors
 Contributors
 ------------
 
-- Firstname Lastname email.address@example.org (optional company website
-  url)
-- Second Person second.person@example.org (optional company website url)
+- `Dixmit <https://www.dixmit.com>`__
 
-Other credits
--------------
-
-[ This file is optional and contains additional credits, other than
-authors, contributors, and maintainers. ]
-
-The development of this module has been financially supported by:
-
-- Company 1 name
-- Company 2 name
+  - Enric Tobella
 
 Maintainers
 -----------
