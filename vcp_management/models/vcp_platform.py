@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 class VcpPlatform(models.Model):
     """
     This model should define how to interact with a Version Control Platform
-    (VCP) such as GitHub, GitLab, etc._get_git_url
+    (VCP) such as GitHub, GitLab, etc.
     1 platform should correspond to 1 organization/account on the VCP.
     """
 
@@ -104,9 +104,6 @@ class VcpPlatform(models.Model):
         self.ensure_one()
         getattr(self, f"_update_information_{self.kind}")()
         self.last_update = fields.Datetime.now()
-
-    def _get_git_url(self, repository):
-        return getattr(self, f"_get_git_url_{self.kind}")(repository)
 
     def _cron_update_platforms(self):
         for platform in self.search([("scheduled_information_update", "=", True)]):

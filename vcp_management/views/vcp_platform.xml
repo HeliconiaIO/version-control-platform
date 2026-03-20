@@ -7,6 +7,7 @@
         <field name="res_model">vcp.repository</field>
         <field name="path">vcp-platform-to-repository</field>
         <field name="view_mode">list,form</field>
+        <field name="context">{'default_platform_id': active_id}</field>
         <field name="domain">[("platform_id", "=", active_id)]</field>
     </record>
 

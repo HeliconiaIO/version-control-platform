@@ -3,8 +3,6 @@
 import os
 import re
 
-import git
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -83,22 +81,8 @@ class VcpRepositoryBranch(models.Model):
                     local_path=local_path,
                 )
             ) from err
-
-        try:
-            repo = git.Repo(local_path)
-            for remote in repo.remotes:
-                if remote.url == self.repository_id._get_git_url():
-                    remote.fetch(self.branch_id.name)
-                    repo.git.reset("--hard", f"{remote.name}/{self.branch_id.name}")
-                    break
-        except git.exc.InvalidGitRepositoryError:
-            # Not cloned yet
-            repo = git.Repo.clone_from(
-                self.repository_id._get_git_url(),
-                local_path,
-                branch=self.branch_id.name,
-                depth=1,
-            )
+        code_kind = self.repository_id.platform_id.host_id.type_id.code_kind
+        getattr(self, f"_download_code_{code_kind}")(local_path)
         return result
 
     def _compute_display_name(self):

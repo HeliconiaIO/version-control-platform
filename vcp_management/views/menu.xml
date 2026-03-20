@@ -4,7 +4,7 @@
 <odoo>
     <menuitem
         id="vcp_main_menu"
-        name="Virtual Control Platform"
+        name="Version Control Platform"
         sequence="16"
         web_icon="vcp_management,static/description/icon.png"
     >

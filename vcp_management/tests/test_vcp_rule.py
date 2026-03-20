@@ -3,12 +3,16 @@
 
 import os
 import tempfile
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from odoo.exceptions import ValidationError
 from odoo.fields import Date
 
 from odoo.addons.base.tests.common import TransactionCase
+
+
+def _download_code_dummy(self, local_path):
+    pass
 
 
 class TestVcpRules(TransactionCase):
@@ -19,6 +23,7 @@ class TestVcpRules(TransactionCase):
             {
                 "name": "Dummy",
                 "code": "dummy",
+                "code_kind": "dummy",
             }
         )
         cls.host = cls.env["vcp.host"].create(
@@ -114,11 +119,10 @@ class TestVcpRules(TransactionCase):
         self.assertFalse(self.repository_branch.rule_information_ids)
         with (
             patch(
-                "odoo.addons.vcp_management.models.vcp_platform.VcpPlatform._get_git_url"
-            ) as mock_git_url,
-            patch(
-                "odoo.addons.vcp_management.models.vcp_repository_branch.git.Repo.clone_from"
-            ) as mock_clone_from,
+                "odoo.addons.vcp_management.models.vcp_repository_branch.VcpRepositoryBranch._download_code_dummy",
+                _download_code_dummy,
+                create=True,
+            ),
         ):
             os.makedirs(self.repository_branch.local_path, exist_ok=True)
             with open(f"{self.repository_branch.local_path}/demofile.py", "w") as f:
@@ -130,8 +134,6 @@ print('Hello World')
 print('Bye bye world')
 """)
             self.repository_branch.process_rules()
-            mock_git_url.assert_called_once()
-            mock_clone_from.assert_called_once()
         self.repository_branch.invalidate_recordset()
         self.assertTrue(self.repository_branch.rule_information_ids)
         rule_info = self.repository_branch.rule_information_ids.filtered(
@@ -149,13 +151,11 @@ print('Bye bye world')
         self.assertFalse(self.repository_branch.rule_information_ids)
         with (
             patch(
-                "odoo.addons.vcp_management.models.vcp_platform.VcpPlatform._get_git_url"
-            ) as mock_git_url,
-            patch(
-                "odoo.addons.vcp_management.models.vcp_repository_branch.git.Repo"
-            ) as mock_git_repo,
+                "odoo.addons.vcp_management.models.vcp_repository_branch.VcpRepositoryBranch._download_code_dummy",
+                _download_code_dummy,
+                create=True,
+            ),
         ):
-            mock_git_url.return_value = "https://example.com/repo.git"
             os.makedirs(self.repository_branch.local_path, exist_ok=True)
             with open(f"{self.repository_branch.local_path}/demofile.py", "w") as f:
                 f.write("""
@@ -165,13 +165,7 @@ print('Hello World')
 
 print('Bye bye world')
 """)
-
-            mock_git_repo.return_value.remotes = [
-                MagicMock(name="origin", url="https://example.com/repo.git")
-            ]
             self.repository_branch.process_rules()
-            mock_git_url.assert_called_once()
-            mock_git_repo.assert_called_once()
         self.repository_branch.invalidate_recordset()
         self.assertTrue(self.repository_branch.rule_information_ids)
         rule_info = self.repository_branch.rule_information_ids.filtered(

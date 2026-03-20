@@ -31,7 +31,7 @@ class VcpRepository(models.Model):
     )
     fork_count = fields.Integer(readonly=True)
     watchers_count = fields.Integer(readonly=True)
-    from_date = fields.Datetime(readonly=True, required=True)
+    from_date = fields.Datetime(required=True)
     request_ids = fields.One2many("vcp.request", inverse_name="repository_id")
     request_count = fields.Integer(compute="_compute_request_count")
     test_field = fields.Char()  # TODO remove after testing
@@ -76,10 +76,6 @@ class VcpRepository(models.Model):
     def _compute_local_path(self):
         for record in self:
             record.local_path = f"{record.platform_id.local_path}/{record.name}"
-
-    def _get_git_url(self):
-        self.ensure_one()
-        return self.platform_id._get_git_url(self)
 
     @api.depends("platform_id")
     def _compute_scheduled_information_update(self):

@@ -3,7 +3,7 @@
 
 {
     "name": "VCP Management",
-    "summary": """Management for your Virtual Control Platforms""",
+    "summary": """Management for your Version Control Platforms""",
     "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Dixmit,Odoo Community Association (OCA)",
@@ -28,10 +28,11 @@
         "views/vcp_rule.xml",
         "views/vcp_rule_information.xml",
         "views/menu.xml",
+        "data/vcp_rule.xml",
     ],
     "demo": [],
     "external_dependencies": {
-        "python": ["GitPython", "pathspec"],
+        "python": ["pathspec"],
         "bin": ["cloc"],
         # special definition used by OCA to install packages
         "deb": ["cloc"],

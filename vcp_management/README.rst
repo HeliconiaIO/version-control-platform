@@ -44,6 +44,85 @@ version control system.
 The system should be done in a way that is agnostic to the system and
 the connections are handled directly by specific modules.
 
+Definitions
+-----------
+
+Hosts
+~~~~~
+
+Hosts are the origin of data. Each host has a type that helps us know
+how to integrate with the system. For example, on Github there is only
+one host (github.com). However, in Gitlab there could be one for each
+instance that we are integrating too.
+
+Platform
+~~~~~~~~
+
+We understand that a platform is an entity that can provide code and
+information to our Version Control Platform (VCP). A platform could be
+an organization on Github (like OCA) or Gitlab for example.
+
+Repository
+~~~~~~~~~~
+
+A repository is an origin of code. For example, `this
+repository <https://github.com/OCA/version-control-platform>`__ could be
+a VCP repository.
+
+Requests
+~~~~~~~~
+
+A request is what contributors do to propose new codes. In Github it is
+a Pull request, however in Gitlab it is called Merge Request.
+
+When a user makes a review on a request, it markes their resolution and
+some comments. That would correspond to Reviews and Comments.
+
+Rules
+~~~~~
+
+Inside a Platform or repository, we can apply some rules to get some
+basic statistics. This rules are usually done by downloading the code
+locally and then it can give some basic information like number of lines
+of code.
+
+Usage
+=====
+
+Creation
+--------
+
+First step is to create a Platform. In the platform we need to set the
+host (you might need to create it on gitlab) and add some Platform Keys.
+
+This keys will allow us to integrate with the origin system.
+
+Refresh
+-------
+
+By default, the system provides some refresh rules for platforms and
+repositories, however we can deactivate or activate it manualy.
+
+Management of rules
+-------------------
+
+One of the capabilities of this module is the generation of rules.
+
+This rules allow us to know some information of the repository.
+
+By default, the system adds some rules aligned with odoo to make it
+easier and allows you to see some examples.
+
+In order to launch this rules, the system must download the code
+locally.
+
+By default the system is using the following main path (in order, the
+first one not null is selected):
+
+- Parameter vcp_management.source_code_local_path
+- In odoo configuration file, the option source_code_local_path
+- System parameter SOURCE_CODE_LOCAL_PATH
+
 Bug Tracker
 ===========
 
