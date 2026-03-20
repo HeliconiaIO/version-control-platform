@@ -18,6 +18,7 @@ class TestUi(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
             {
                 "name": "Dummy",
                 "code": "dummy",
+                "code_kind": "dummy",
             }
         )
         cls.host = cls.env["vcp.host"].create(
