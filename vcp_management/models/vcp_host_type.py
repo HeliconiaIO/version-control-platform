@@ -10,4 +10,5 @@ class VcpHostType(models.Model):
 
     name = fields.Char(required=True)
     code = fields.Char(required=True)
+    code_kind = fields.Char(required=True)
     active = fields.Boolean(default=True)

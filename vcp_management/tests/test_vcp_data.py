@@ -16,6 +16,7 @@ class TestVcpPartner(TransactionCase):
             {
                 "name": "Dummy",
                 "code": "dummy",
+                "code_kind": "dummy",
             }
         )
         cls.host = cls.env["vcp.host"].create(
