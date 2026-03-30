@@ -32,19 +32,25 @@ class VcpRule(models.Model):
         default="cloc",
     )
 
-    def _process_rule(self, record):
+    def _process_rule(self, record, parameters=None):
         """
         Process the rule on the given repository and branch.
         It will call the corresponding method based on the rule type.
         """
-        return getattr(self, f"_process_rule_{self.rule_type}")(record)
+        return getattr(self, f"_process_rule_{self.rule_type}")(record, parameters)
 
-    def _process_rule_cloc(self, record):
+    def _process_rule_cloc(self, record, parameters=None):
         """
         Process the rule as a cloc analysis.
         """
         record._download_code()
-        cloc_response = self._call_cloc_command(record.local_path)
+        if parameters is None:
+            parameters = {}
+        if "cloc" in parameters:
+            cloc_response = parameters["cloc"]
+        else:
+            cloc_response = self._call_cloc_command(record.local_path)
+            parameters["cloc"] = cloc_response
         matches = self._cloc_get_matches(record.local_path)
         cloc_data = self._action_analysis_process_cloc(
             record.local_path, matches, cloc_response

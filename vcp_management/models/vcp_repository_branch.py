@@ -65,9 +65,12 @@ class VcpRepositoryBranch(models.Model):
     def process_rules(self):
         for record in self:
             rules = record._get_rules()
+            # This parameters dict can be used to store parameters that will
+            # be used by other rules.
+            parameters = {}
             for rule in rules:
                 if re.match(rule.branch_pattern, record.branch_id.name):
-                    rule._process_rule(record)
+                    rule._process_rule(record, parameters)
 
     def _download_code(self):
         result = super()._download_code()
