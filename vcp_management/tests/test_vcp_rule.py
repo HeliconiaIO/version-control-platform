@@ -176,3 +176,67 @@ print('Bye bye world')
         self.assertEqual(rule_info.documentation_count, 1)
         self.assertEqual(rule_info.empty_count, 3)
         self.assertEqual(rule_info.total_count, 6)
+
+    def test_process_rules_only_one_cloc_execution(self):
+        rule = self.env["vcp.rule"].create(
+            {
+                "name": "Test Rule with cloc response",
+                "rule_type": "cloc",
+                "paths": "*.js",
+            }
+        )
+        self.rule.paths = "*.py"
+        self.platform.rule_ids = rule | self.rule
+        self.assertFalse(os.path.exists(self.repository_branch.local_path))
+        self.assertFalse(self.repository_branch.rule_information_ids)
+        with (
+            patch(
+                "odoo.addons.vcp_management.models.vcp_repository_branch.VcpRepositoryBranch._download_code_dummy",
+                _download_code_dummy,
+                create=True,
+            ),
+            patch(
+                "odoo.addons.vcp_management.models.vcp_rule.VcpRule._call_cloc_command"
+            ) as mock_cloc,
+        ):
+            mock_cloc.return_value = {
+                f"{self.repository_branch.local_path}/demofile.py": {
+                    "code": 2,
+                    "comment": 1,
+                    "empty": 2,
+                    "total": 6,
+                    "blank": 0,
+                },
+                f"{self.repository_branch.local_path}/demofile.js": {
+                    "code": 1,
+                    "comment": 0,
+                    "empty": 0,
+                    "total": 1,
+                    "blank": 0,
+                },
+            }
+            os.makedirs(self.repository_branch.local_path, exist_ok=True)
+            with open(f"{self.repository_branch.local_path}/demofile.py", "w") as f:
+                f.write("""
+# This is a comment
+print('Hello World')
+print('Hello World')
+""")
+            with open(f"{self.repository_branch.local_path}/demofile.js", "w") as f:
+                f.write("console.log('Hello World');")
+            self.repository_branch.process_rules()
+            mock_cloc.assert_called_once()
+        self.repository_branch.invalidate_recordset()
+        self.assertEqual(2, len(self.repository_branch.rule_information_ids))
+        self.assertEqual(
+            1,
+            self.repository_branch.rule_information_ids.filtered(
+                lambda x: x.rule_id == rule
+            ).code_count,
+        )
+        self.assertEqual(
+            2,
+            self.repository_branch.rule_information_ids.filtered(
+                lambda x: x.rule_id == self.rule
+            ).code_count,
+        )

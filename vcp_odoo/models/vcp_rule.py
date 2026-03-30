@@ -28,7 +28,7 @@ class VcpRule(models.Model):
         "odoo_module_rule_id",
     )
 
-    def _process_rule_odoo_module(self, record):
+    def _process_rule_odoo_module(self, record, parameters=None):
         """
         Process the rule as an Odoo module analysis.
         """
