@@ -17,7 +17,16 @@ Version Control Platform allows to import Git information and other kind of cont
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[vcp_git](vcp_git/) | 18.0.1.0.0 |  | Allows to download code from git
+[vcp_github](vcp_github/) | 18.0.1.0.0 |  | Integrate Version Control Platform with Github
+[vcp_management](vcp_management/) | 18.0.1.0.0 |  | Management for your Version Control Platforms
+[vcp_odoo](vcp_odoo/) | 18.0.1.0.0 |  | Import Odoo modules from VCP Repositories
+[vcp_portal](vcp_portal/) | 18.0.1.0.0 |  | Version control platform integration with portal
+[vcp_website](vcp_website/) | 18.0.1.0.0 |  | Adds integration of VCP with Odoo Website
 
 [//]: # (end addons)
 

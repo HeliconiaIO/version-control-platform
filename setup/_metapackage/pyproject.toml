@@ -1,0 +1,16 @@
+[project]
+name = "odoo-addons-oca-version-control-platform"
+version = "18.0.20260401.0"
+dependencies = [
+    "odoo-addon-vcp_git==18.0.*",
+    "odoo-addon-vcp_github==18.0.*",
+    "odoo-addon-vcp_management==18.0.*",
+    "odoo-addon-vcp_odoo==18.0.*",
+    "odoo-addon-vcp_portal==18.0.*",
+    "odoo-addon-vcp_website==18.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 18.0",
+]
