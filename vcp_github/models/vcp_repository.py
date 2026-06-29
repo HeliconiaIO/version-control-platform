@@ -59,7 +59,7 @@ class VcpRepository(models.Model):
             reset = fields.Datetime.to_string(
                 datetime.utcfromtimestamp(rate["resources"]["core"]["reset"])
             )
-            raise ValidationError(self.env._(f"Reset on {reset}")) from e
+            raise ValidationError(self.env._("Reset on %(reset)s", reset=reset)) from e
 
     def _parse_github_pr(self, pr, client):
         self.ensure_one()
@@ -244,4 +244,4 @@ class VcpRepository(models.Model):
             reset = fields.Datetime.to_string(
                 datetime.utcfromtimestamp(rate["resources"]["core"]["reset"])
             )
-            raise ValidationError(self.env._(f"Reset on {reset}")) from e
+            raise ValidationError(self.env._("Reset on %(reset)s", reset=reset)) from e

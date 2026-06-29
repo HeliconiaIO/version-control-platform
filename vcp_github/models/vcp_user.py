@@ -46,7 +46,7 @@ class VcpUser(models.Model):
             reset = fields.Datetime.to_string(
                 datetime.utcfromtimestamp(rate["resources"]["core"]["reset"])
             )
-            raise ValidationError(self.env._(f"Reset on {reset}")) from e
+            raise ValidationError(self.env._("Reset on %(reset)s", reset=reset)) from e
         except github3.exceptions.NotFoundError:
             _logger.warning(
                 "The user %s do not exist anymore, inactive it", self.external_id

@@ -9,7 +9,7 @@ import markdown
 import requests
 from pytz import UTC
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -30,7 +30,7 @@ class VcpPlatform(models.Model):
         clients = self._get_github_clients()
         if not clients:
             raise ValidationError(
-                _(
+                self.env._(
                     "No github clients configured. "
                     "Please enter at least a Github Personal Access Token. "
                     "You can check more information at "

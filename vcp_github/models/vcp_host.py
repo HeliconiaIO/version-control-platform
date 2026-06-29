@@ -1,7 +1,7 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, models
+from odoo import api, models
 from odoo.exceptions import ValidationError
 
 
@@ -16,4 +16,6 @@ class VcpHost(models.Model):
                 limit=1,
             )
             if platforms:
-                raise ValidationError(_("Only one GitHub Host type is allowed."))
+                raise ValidationError(
+                    self.env._("Only one GitHub Host type is allowed.")
+                )
