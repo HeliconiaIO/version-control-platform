@@ -87,6 +87,7 @@ class VcpPlatform(models.Model):
             .get_param("vcp_management.source_code_local_path", "")
             or tools.config.get("source_code_local_path", "")
             or os.environ.get("SOURCE_CODE_LOCAL_PATH", "")
+            or "/tmp/vcp_source_code"
         )
 
     @api.depends()
@@ -179,56 +180,74 @@ class VcpPlatform(models.Model):
         data = defaultdict(lambda: default_dict.copy())
         if not field:
             return data
-        for merged in (
+        for val, count in (
             self.env["vcp.request"]
             .sudo()
-            .read_group(
+            ._read_group(
                 self._get_merged_domain(start, end, **values)
                 + extra_domain
                 + [(field, "!=", False)],
-                [field],
-                [field],
+                groupby=[field],
+                aggregates=["__count"],
             )
         ):
-            data[merged[field][0]]["merged_requests"] = merged[f"{field}_count"]
-        for pr in (
-            self.env["vcp.request"]
-            .sudo()
-            .read_group(
-                self._get_created_domain(start, end, **values)
-                + extra_domain
-                + [(field, "!=", False)],
-                [field, "user_id:count_distinct"] if field != "user_id" else [field],
-                [field],
-            )
-        ):
-            data[pr[field][0]]["created_requests"] = pr[f"{field}_count"]
-            if field != "user_id":
-                data[pr[field][0]]["developers"] = pr["user_id"]
-        for comment in (
+            group_id = val.id if isinstance(val, models.BaseModel) else val
+            data[group_id]["merged_requests"] = count
+        if field != "user_id":
+            for val, user_id_count, count in (
+                self.env["vcp.request"]
+                .sudo()
+                ._read_group(
+                    self._get_created_domain(start, end, **values)
+                    + extra_domain
+                    + [(field, "!=", False)],
+                    groupby=[field],
+                    aggregates=["user_id:count_distinct", "__count"],
+                )
+            ):
+                group_id = val.id if isinstance(val, models.BaseModel) else val
+                data[group_id]["created_requests"] = count
+                data[group_id]["developers"] = user_id_count
+        else:
+            for val, count in (
+                self.env["vcp.request"]
+                .sudo()
+                ._read_group(
+                    self._get_created_domain(start, end, **values)
+                    + extra_domain
+                    + [(field, "!=", False)],
+                    groupby=[field],
+                    aggregates=["__count"],
+                )
+            ):
+                group_id = val.id if isinstance(val, models.BaseModel) else val
+                data[group_id]["created_requests"] = count
+        for val, count in (
             self.env["vcp.comment"]
             .sudo()
-            .read_group(
+            ._read_group(
                 self._get_comments_domain(start, end, **values)
                 + extra_domain
                 + [(field, "!=", False)],
-                [field],
-                [field],
+                groupby=[field],
+                aggregates=["__count"],
             )
         ):
-            data[comment[field][0]]["comments"] = comment[f"{field}_count"]
-        for review in (
+            group_id = val.id if isinstance(val, models.BaseModel) else val
+            data[group_id]["comments"] = count
+        for val, count in (
             self.env["vcp.review"]
             .sudo()
-            .read_group(
+            ._read_group(
                 self._get_reviews_domain(start, end, **values)
                 + extra_domain
                 + [(field, "!=", False)],
-                [field],
-                [field],
+                groupby=[field],
+                aggregates=["__count"],
             )
         ):
-            data[review[field][0]]["reviews"] = review[f"{field}_count"]
+            group_id = val.id if isinstance(val, models.BaseModel) else val
+            data[group_id]["reviews"] = count
         return data
 
     def _get_dates(self, year, month, period, **values):

@@ -41,6 +41,6 @@ class VcpComment(models.Model):
         required=True,
         ondelete="cascade",
     )
-    _sql_constraints = [
-        ("external_id_uniq", "unique(external_id)", "External ID must be unique.")
-    ]
+    _external_id_uniq = models.Constraint(
+        "unique(external_id)", "External ID must be unique."
+    )

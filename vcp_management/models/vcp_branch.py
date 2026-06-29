@@ -19,6 +19,6 @@ class VcpBranch(models.Model):
         required=True,
         readonly=True,
     )
-    _sql_constraints = [
-        ("name_uniq", "unique(name, platform_id)", "Branch name must be unique.")
-    ]
+    _name_uniq = models.Constraint(
+        "unique(name, platform_id)", "Branch name must be unique."
+    )

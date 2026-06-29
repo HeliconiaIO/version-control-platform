@@ -35,13 +35,10 @@ class VcpUser(models.Model):
     company = fields.Char(readonly=True)
     active = fields.Boolean(readonly=True, default=True)
 
-    _sql_constraints = [
-        (
-            "external_id_uniq",
-            "unique(external_id, host_id)",
-            "External ID must be unique.",
-        )
-    ]
+    _external_id_uniq = models.Constraint(
+        "unique(external_id, host_id)",
+        "External ID must be unique.",
+    )
 
     def _get_contributor_url(self):
         return False

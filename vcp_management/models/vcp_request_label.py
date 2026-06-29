@@ -13,7 +13,8 @@ class VcpRequestLabel(models.Model):
 
     name = fields.Char(required=True, readonly=True)
 
-    color = fields.Char(default=lambda x: x._default_color())
+    # color = fields.Char(default=lambda x: x._default_color())
+    color = fields.Integer(default=lambda x: x._default_color())
 
     request_ids = fields.Many2many(
         comodel_name="vcp.request",
@@ -21,7 +22,7 @@ class VcpRequestLabel(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [("name_uniq", "unique(name)", "Label name must be unique.")]
+    _name_uniq = models.Constraint("unique(name)", "Label name must be unique.")
 
     def _default_color(self):
         return randint(1, 11)

@@ -47,6 +47,6 @@ class VcpReview(models.Model):
         string="Organization Partner",
     )
 
-    _sql_constraints = [
-        ("external_id_uniq", "unique(external_id)", "External ID must be unique.")
-    ]
+    _external_id_uniq = models.Constraint(
+        "unique(external_id)", "External ID must be unique."
+    )

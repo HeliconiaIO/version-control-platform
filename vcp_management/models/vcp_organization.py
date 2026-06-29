@@ -29,13 +29,10 @@ class VcpOrganization(models.Model):
         "res.partner",
     )
 
-    _sql_constraints = [
-        (
-            "external_id_uniq",
-            "unique(external_id, host_id)",
-            "External ID must be unique.",
-        )
-    ]
+    _external_id_uniq = models.Constraint(
+        "unique(external_id, host_id)",
+        "External ID must be unique.",
+    )
 
     def _get_contributor_url(self):
         return False

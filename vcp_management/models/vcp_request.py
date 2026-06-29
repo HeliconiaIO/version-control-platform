@@ -84,9 +84,9 @@ class VcpRequest(models.Model):
     total_comments = fields.Integer(readonly=True)
     review_comments = fields.Integer(readonly=True)
 
-    _sql_constraints = [
-        ("external_id_uniq", "unique(external_id)", "External ID must be unique.")
-    ]
+    _external_id_uniq = models.Constraint(
+        "unique(external_id)", "External ID must be unique."
+    )
 
     @api.depends("review_ids")
     def _compute_review_count(self):

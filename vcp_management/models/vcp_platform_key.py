@@ -19,6 +19,6 @@ class VcpPlatformKey(models.Model):
     )
     name = fields.Char(required=True)
 
-    _sql_constraints = [
-        ("name_uniq", "unique(name, platform_id)", "API Key must be unique.")
-    ]
+    _name_uniq = models.Constraint(
+        "unique(name, platform_id)", "API Key must be unique."
+    )
