@@ -100,7 +100,7 @@ class TestGithub(TransactionCase):
                     "id": 1,
                     "user": {"login": "contributor1"},
                     "base": {"ref": "main"},
-                    "head": {"repo": [MagicMock()]},
+                    "head": {"repo": ["oca"]},
                     "html_url": "https://github.com/oca/server-tools/pull/1",
                     "state": "closed",
                     "title": "Fix issue",
@@ -116,6 +116,23 @@ class TestGithub(TransactionCase):
                     "deletions": 50,
                     "number": 1,
                 }
+            )
+            mock_issue_request.id = 1
+            mock_issue_request.user.login = "contributor1"
+            mock_issue_request.base.ref = "main"
+            mock_issue_request.head.repo = ["oca"]
+            mock_issue_request.html_url = "https://github.com/oca/server-tools/pull/1"
+            mock_issue_request.state = "closed"
+            mock_issue_request.title = "Fix issue"
+            mock_issue_request.labels = [{"name": "merged 🎉"}]
+            mock_issue_request.is_merged.return_value = False
+            mock_issue_request.draft = False
+            mock_issue_request.number = 1
+            mock_issue_request.comments_url = (
+                "https://api.github.com/repos/oca/server-tools/issues/1/comments"
+            )
+            mock_issue_request.reviews.return_value.url = (
+                "https://api.github.com/repos/oca/server-tools/pulls/1/reviews"
             )
             mock_login._instance_or_null.return_value = mock_issue_request
             mock_login.search_issues.return_value = [mock_issue_request]
