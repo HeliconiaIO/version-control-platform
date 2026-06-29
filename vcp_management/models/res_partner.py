@@ -62,7 +62,10 @@ class ResPartner(models.Model):
                     response.raise_for_status()
                 except Exception as e:
                     raise UserError(
-                        self.env._("Fail to download avatar, %s.please retry".format())
+                        self.env._(
+                            "Failed to download avatar: %(error)s. Please retry.",
+                            error=str(e),
+                        )
                     ) from e
                 record.image_1920 = base64.b64encode(response.content).decode("utf-8")
 
@@ -89,7 +92,7 @@ class ResPartner(models.Model):
         start, end = self.env["vcp.platform"]._get_dates(today.year, today.month, "MAT")
         data = (
             self.env["vcp.platform"]
-            .search([])
+            .search([], limit=None)
             ._generate_data(
                 start=start,
                 end=end,

@@ -7,7 +7,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -252,96 +252,104 @@ class VcpPlatform(models.Model):
         """
         if kind == "contributors":
             return [
-                {"field": "name", "title": _("Name"), "kind": "name"},
+                {"field": "name", "title": self.env._("Name"), "kind": "name"},
                 {
                     "field": "created_requests",
-                    "title": _("Created Requests"),
+                    "title": self.env._("Created Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "merged_requests",
-                    "title": _("Merged Requests"),
+                    "title": self.env._("Merged Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "comments",
-                    "title": _("Comments"),
+                    "title": self.env._("Comments"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "reviews",
-                    "title": _("Reviews"),
+                    "title": self.env._("Reviews"),
                     "kind": "float",
                     "decimals": 0,
                 },
             ]
         elif kind == "organizations":
             return [
-                {"field": "name", "title": _("Organization Name"), "kind": "name"},
+                {
+                    "field": "name",
+                    "title": self.env._("Organization Name"),
+                    "kind": "name",
+                },
                 {
                     "field": "created_requests",
-                    "title": _("Created Requests"),
+                    "title": self.env._("Created Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "merged_requests",
-                    "title": _("Merged Requests"),
+                    "title": self.env._("Merged Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "comments",
-                    "title": _("Comments"),
+                    "title": self.env._("Comments"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "reviews",
-                    "title": _("Reviews"),
+                    "title": self.env._("Reviews"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "developers",
-                    "title": _("Developers"),
+                    "title": self.env._("Developers"),
                     "kind": "float",
                     "decimals": 0,
                 },
             ]
         elif kind == "repositories":
             return [
-                {"field": "name", "title": _("Repository Name"), "kind": "name"},
+                {
+                    "field": "name",
+                    "title": self.env._("Repository Name"),
+                    "kind": "name",
+                },
                 {
                     "field": "created_requests",
-                    "title": _("Created Requests"),
+                    "title": self.env._("Created Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "merged_requests",
-                    "title": _("Merged Requests"),
+                    "title": self.env._("Merged Requests"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "comments",
-                    "title": _("Comments"),
+                    "title": self.env._("Comments"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "reviews",
-                    "title": _("Reviews"),
+                    "title": self.env._("Reviews"),
                     "kind": "float",
                     "decimals": 0,
                 },
                 {
                     "field": "developers",
-                    "title": _("Developers"),
+                    "title": self.env._("Developers"),
                     "kind": "float",
                     "decimals": 0,
                 },

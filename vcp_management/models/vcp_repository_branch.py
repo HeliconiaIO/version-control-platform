@@ -4,7 +4,7 @@ import os
 import re
 import traceback
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -57,7 +57,10 @@ class VcpRepositoryBranch(models.Model):
         for record in self:
             if record.branch_id.platform_id != record.repository_id.platform_id:
                 raise ValidationError(
-                    _("The branch and the repository must belong to the same platform.")
+                    self.env._(
+                        "The branch and the repository must belong to the "
+                        "same platform."
+                    )
                 )
 
     def _get_rules(self):
@@ -99,7 +102,7 @@ class VcpRepositoryBranch(models.Model):
             os.makedirs(local_path, exist_ok=True)
         except PermissionError as err:
             raise ValidationError(
-                _(
+                self.env._(
                     "Unable to create a folder in '%(local_path)s'.",
                     local_path=local_path,
                 )

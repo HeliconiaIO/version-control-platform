@@ -3,7 +3,7 @@
 
 from random import randint
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
 
 
@@ -37,7 +37,7 @@ class VcpRequestLabel(models.Model):
     def _check_requests(self):
         if self.mapped("request_ids"):
             raise UserError(
-                _(
+                self.env._(
                     "You can not delete labels that are related to Requests. "
                     "You should first delete the related requests."
                 )
