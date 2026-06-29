@@ -21,9 +21,7 @@ class VcpOdooModule(models.Model):
         "vcp.repository.branch", compute="_compute_repository_branch_ids"
     )
 
-    _sql_constraints = [
-        ("name_uniq", "unique(name)", "The module name must be unique"),
-    ]
+    _name_uniq = models.Constraint("unique(name)", "The module name must be unique")
 
     @api.depends("version_ids")
     def _compute_version_count(self):

@@ -12,7 +12,7 @@ class VcpOdooAuthor(models.Model):
     name = fields.Char()
     partner_id = fields.Many2one("res.partner", "Partner")
 
-    _sql_constraints = [("name_unique", "unique(name)", "Name must be uniq")]
+    _name_unique = models.Constraint("unique(name)", "Name must be uniq")
 
     def _get_partner(self, name):
         # Simple way to match the partner
