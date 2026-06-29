@@ -1,7 +1,7 @@
 # Copyright 2026 Dixmit
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
 
 
@@ -28,7 +28,7 @@ class VcpOdooPythonLibrary(models.Model):
     def _check_module_versions(self):
         if self.mapped("module_version_ids"):
             raise UserError(
-                _(
+                self.env._(
                     "You can not delete librairies that are related to Odoo Modules. "
                     "You should first delete the related odoo modules."
                 )
