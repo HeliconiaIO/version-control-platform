@@ -4,7 +4,7 @@
 {
     "name": "Vcp Git",
     "summary": """Allows to download code from git""",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "license": "AGPL-3",
     "author": "Dixmit,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/version-control-platform",
